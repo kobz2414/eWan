@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "887661690670",
+    "project_id": "e-wan-88b78",
+    "storage_bucket": "e-wan-88b78.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:887661690670:android:9f9dbf6f9fbbde9b25c4bf",
+        "android_client_info": {
+          "package_name": "com.ewan.e_wan"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "887661690670-7oc7369cqfj7vjlv36uq19bd85o8r891.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCjuUs7boT7ARETDn-pK-N2ytXgt0WfFzU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "887661690670-7oc7369cqfj7vjlv36uq19bd85o8r891.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
