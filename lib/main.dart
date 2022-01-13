@@ -2,6 +2,7 @@ import 'package:e_wan/GoogleFiles/google_sign_in.dart';
 import 'package:e_wan/homePageController.dart';
 import 'package:e_wan/parkingLocation.dart';
 import 'package:e_wan/parkingSlot.dart';
+import 'package:e_wan/startPage.dart';
 import 'package:e_wan/transactionDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -28,10 +29,11 @@ class homeScreen extends StatelessWidget {
         theme: ThemeData(
           fontFamily: 'Metropolis',
         ),
+        home: homePageController(),
         routes: {
-          '/': (context) => homePageController(),
-          //'/itemScreen': (context) => itemScreen(),
-          //'/itemDetails': (context) => itemDetails()
+          '/parkingLocation': (context) => parkingLocation(),
+          '/startPage': (context) => startPage(),
+          '/homePageController': (context) => homePageController(),
         },
       )
   );

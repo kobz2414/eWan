@@ -1,3 +1,4 @@
+import 'package:e_wan/homePage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -12,6 +13,7 @@ class parkingLocation extends StatefulWidget {
 }
 
 class _parkingLocationState extends State<parkingLocation> {
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +29,7 @@ class _parkingLocationState extends State<parkingLocation> {
                 children: [
                   SizedBox(height: 80),
                   Column(
-                    children: [
+                    children: const [
                       Text("CHOOSE A", style:
                       TextStyle(
                           color: Colors.black,
@@ -36,7 +38,7 @@ class _parkingLocationState extends State<parkingLocation> {
                       ),),
                     ],
                   ),
-                  SizedBox(height: 10,),
+                  const SizedBox(height: 10,),
                   Column(
                     children: const [
                       Text("PARKING", style:
@@ -61,7 +63,7 @@ class _parkingLocationState extends State<parkingLocation> {
                       )
                     ],
                   ),
-                  SizedBox(height: 40),
+                  const SizedBox(height: 40),
                   Column(
                     children: [
                       Container(
@@ -70,11 +72,13 @@ class _parkingLocationState extends State<parkingLocation> {
                             stream: FirebaseFirestore.instance.collection('ParkingLocation').snapshots(),
                             builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                               var itemCount = snapshot.data?.docs.length ?? 0;
-                              if (!snapshot.hasData && snapshot.hasError) {
-                                return Center(
+                              if (snapshot.connectionState == ConnectionState.waiting) {
+                                return const Center(
                                   child: CircularProgressIndicator(),
                                 );
-                              } else {
+                              } else if (snapshot.hasError) {
+                                return const Text("Something went wrong");
+                              }else {
                                 return ListView.builder(
                                     scrollDirection: Axis.vertical,
                                     shrinkWrap: true,
@@ -91,14 +95,18 @@ class _parkingLocationState extends State<parkingLocation> {
                                               onPrimary: Colors.black,
                                               minimumSize: Size(MediaQuery.of(context).size.width-40, 70),
                                             ),onPressed: (){
-
+                                            Navigator.push(context,
+                                                MaterialPageRoute(
+                                                  builder: (context) => homePage(),
+                                                )
+                                            );
                                           },
                                             child: Column(
                                               children: [
                                                 SizedBox(height: 10,),
                                                 Column(
                                                   children: [
-                                                    Text(documentSnapshot["ParkingLocationName"], style: TextStyle(
+                                                    Text(documentSnapshot["ParkingLocationName"], style: const TextStyle(
                                                         color: Colors.white,
                                                         fontWeight: FontWeight.bold,
                                                         fontSize: 20
@@ -108,7 +116,7 @@ class _parkingLocationState extends State<parkingLocation> {
                                                 ),
                                                 Column(
                                                   children: [
-                                                    Text('Total: ' + documentSnapshot["ParkingLocationTotal"].toString(), style: TextStyle(
+                                                    Text('Total: ' + documentSnapshot["ParkingLocationTotal"].toString(), style: const TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 12
                                                     ),),
@@ -116,7 +124,7 @@ class _parkingLocationState extends State<parkingLocation> {
                                                 ),
                                                 Column(
                                                   children: [
-                                                    Text('Available: ' + documentSnapshot["ParkingLocationAvailable"].toString(), style: TextStyle(
+                                                    Text('Available: ' + documentSnapshot["ParkingLocationAvailable"].toString(), style: const TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 12
                                                     ),),
@@ -126,7 +134,7 @@ class _parkingLocationState extends State<parkingLocation> {
                                                 Column(
                                                   children: [
                                                     Text('LAST UPDATED: ' + d12.toString(), style:
-                                                    TextStyle(
+                                                    const TextStyle(
                                                         fontSize: 12,
                                                         color: Colors.white,
                                                         fontFamily: "Metropolis",
@@ -135,11 +143,11 @@ class _parkingLocationState extends State<parkingLocation> {
                                                     )
                                                   ],
                                                 ),
-                                                SizedBox(height: 10,)
+                                                const SizedBox(height: 10,)
                                               ],
                                             ),
                                           ),
-                                          SizedBox(height: 10,)
+                                          const SizedBox(height: 10,)
                                         ]
                                       );
                                     });

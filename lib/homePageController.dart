@@ -1,7 +1,7 @@
 import 'package:e_wan/signIn.dart';
+import 'package:e_wan/startPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:e_wan/homePage.dart';
 
 class homePageController extends StatelessWidget {
   @override
@@ -12,7 +12,7 @@ class homePageController extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return Center(child: CircularProgressIndicator());
         }else if (snapshot.hasData){
-          return homePage();
+          return startPage();
         }else if (snapshot.hasError){
           return Center(child: Text('Something went wrong!'));
         }else{
