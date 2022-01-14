@@ -34,6 +34,8 @@ class homeScreen extends StatelessWidget {
           '/parkingLocation': (context) => parkingLocation(),
           '/startPage': (context) => startPage(),
           '/homePageController': (context) => homePageController(),
+          '/homePage': (context) => homePage(),
+          '/transactionDetails' : (context) => transactionDetails(),
         },
       )
   );

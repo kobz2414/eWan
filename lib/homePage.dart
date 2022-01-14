@@ -5,6 +5,7 @@ import 'package:e_wan/parkingLocation.dart';
 import 'package:e_wan/signIn.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class homePage extends StatefulWidget {
@@ -17,13 +18,17 @@ class homePage extends StatefulWidget {
 class _homePageState extends State<homePage> {
   final user = FirebaseAuth.instance.currentUser!;
 
-  int availableParkingSpaces = 10;
-  int totalParkingSpaces = 10;
-  String parkingName = "SM ECOLAND";
-  String timeUpdated = "12:50 pm, December 09, 2021";
+  Map data = {};
+
+  int availableParkingSpaces = 0;
+  int totalParkingSpaces = 0;
+  String parkingName = "";
+  String timeUpdated = "";
 
   @override
   Widget build(BuildContext context) {
+
+    data = ModalRoute.of(context)!.settings.arguments as Map;
 
     final user = FirebaseAuth.instance.currentUser!;
     return Scaffold(
@@ -95,175 +100,213 @@ class _homePageState extends State<homePage> {
                   )),
                 //PARKING NAME
                 Positioned(
-                    child:Container(
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        color: Color(0xff5d6974),
-                      ),
-                      margin: const EdgeInsets.only(top: 60, left: 20, right: 20),
-                      height: 150,
-                      child: Padding(
-                          padding: const EdgeInsets.all(15), //apply padding to all four sides
-                          child:
-                          Container(
-                            child: InkWell(
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Text(parkingName, style: const TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w800,
-                                              fontSize: 20
-                                          ),)
-                                        ],
-                                      ),
-                                      Row(
-                                        children: [
-                                          Text("LAST UPDATED: " + timeUpdated, style: const TextStyle(
-                                              color: Colors.white,
-                                              fontWeight: FontWeight.w500,
-                                              fontSize: 8
-                                          ),)
-                                        ],
+                    child:
+                    StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance.collection('ParkingLocation').snapshots(),
+                        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return const Text("Something went wrong");
+                          }else {
+                            //String
+                            DocumentSnapshot documentSnapshot = snapshot.data!.docs[data['parkingLocationID']];
+                            DateTime dt = (documentSnapshot["ParkingLocationLastUpdate"] as Timestamp).toDate();
+                            var d12 = DateFormat('MM/dd/yyyy, hh:mm a').format(dt);
+                            parkingName = documentSnapshot['ParkingLocationName'];
+                            timeUpdated = d12;
+
+                            return Container(
+                              decoration: const BoxDecoration(
+                                borderRadius: BorderRadius.all(Radius.circular(20)),
+                                color: Color(0xff5d6974),
+                              ),
+                              margin: const EdgeInsets.only(top: 60, left: 20, right: 20),
+                              height: 150,
+                              child: Padding(
+                                  padding: const EdgeInsets.all(15), //apply padding to all four sides
+                                  child:
+                                  Container(
+                                      child: InkWell(
+                                        child: Column(
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(parkingName, style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w800,
+                                                    fontSize: 20
+                                                ),)
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text("LAST UPDATED: " + timeUpdated, style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w500,
+                                                    fontSize: 8
+                                                ),)
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                        onTap: () {
+                                          Navigator.pushNamed(context, '/parkingLocation');
+                                        },
                                       )
-                                    ],
-                                  ),
-                                  onTap: () {
-                                    Navigator.pushNamed(context, '/parkingLocation');
-                              },
-                            )
-                          )
-                      ),
+                                  )
+                              ),
+                            );
+                          }
+                        }
                     ),
                 ),
                 //PARKING VACANCY DETAILS
                 Positioned(
-                    child: Container(
-                      decoration: const BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(20)),
-                        color: Color(0xff252626),
-                      ),
-                      margin: const EdgeInsets.only(top: 120, left: 20, right: 20),
-                      height: 110,
-                      child: Padding(
-                          padding: const EdgeInsets.only(top: 8, left: 15, right: 15), //apply padding to all four sides
-                          child: Column(
-                            children: [
-                              Row(
-                                children: [
-                                  Column(
-                                    children: [
-                                      Stack(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(top: 15, left: 8),
-                                            child: Stack(
+                    child: StreamBuilder<QuerySnapshot>(
+                        stream: FirebaseFirestore.instance.collection('ParkingLocation').snapshots(),
+                        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.connectionState == ConnectionState.waiting) {
+                            return const Center(
+                              child: CircularProgressIndicator(),
+                            );
+                          } else if (snapshot.hasError) {
+                            return const Text("Something went wrong");
+                          }else {
+                            DocumentSnapshot documentSnapshot = snapshot.data!.docs[data['parkingLocationID']];
+                            totalParkingSpaces = int.parse(documentSnapshot["ParkingLocationTotal"].toString());
+                            availableParkingSpaces = int.parse(documentSnapshot["ParkingLocationAvailable"].toString());
+
+                            return Container(
+                                decoration: const BoxDecoration(
+                                  borderRadius: BorderRadius.all(Radius.circular(20)),
+                                  color: Color(0xff252626),
+                                ),
+                                margin: const EdgeInsets.only(top: 120, left: 20, right: 20),
+                                height: 110,
+                                child: Padding(
+                                    padding: const EdgeInsets.only(top: 8, left: 15, right: 15), //apply padding to all four sides
+                                    child: Column(
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Column(
                                               children: [
-                                                Positioned(
-                                                  child: Row(
-                                                    children: const [
-                                                      Text("TOTAL PARKING SPACES", style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 10,
-                                                        fontWeight: FontWeight.bold,
-                                                      ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(top: 23, left: 8),
-                                            child: Stack(
-                                              children: [
-                                                Positioned(
-                                                    child: Row(
-                                                      children: [
-                                                        (totalParkingSpaces > 0 && totalParkingSpaces < 20) ?
-                                                        Text(totalParkingSpaces.toString(), style: const TextStyle(
-                                                          color: Color(0xfff8d73a),
-                                                          fontSize: 60,
-                                                          fontWeight: FontWeight.bold,
-                                                          letterSpacing: -3,
-                                                        ),) :
-                                                        Text(totalParkingSpaces.toString(), style: const TextStyle(
-                                                          color: Color(0xfff8d73a),
-                                                          fontSize: 60,
-                                                          fontWeight: FontWeight.bold,
-                                                          letterSpacing: 0,
-                                                        ),),
-                                                      ],
+                                                Stack(
+                                                  children: [
+                                                    Padding(
+                                                        padding: const EdgeInsets.only(top: 15, left: 8),
+                                                        child: Stack(
+                                                          children: [
+                                                            Positioned(
+                                                              child: Row(
+                                                                children: const [
+                                                                  Text("TOTAL PARKING SPACES", style: TextStyle(
+                                                                    color: Colors.white,
+                                                                    fontSize: 10,
+                                                                    fontWeight: FontWeight.bold,
+                                                                  ),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        )
+                                                    ),
+                                                    Padding(
+                                                        padding: const EdgeInsets.only(top: 23, left: 8),
+                                                        child: Stack(
+                                                          children: [
+                                                            Positioned(
+                                                                child: Row(
+                                                                  children: [
+                                                                    (totalParkingSpaces > 0 && totalParkingSpaces < 20) ?
+                                                                    Text(totalParkingSpaces.toString(), style: const TextStyle(
+                                                                      color: Color(0xfff8d73a),
+                                                                      fontSize: 60,
+                                                                      fontWeight: FontWeight.bold,
+                                                                      letterSpacing: -3,
+                                                                    ),) :
+                                                                    Text(totalParkingSpaces.toString(), style: const TextStyle(
+                                                                      color: Color(0xfff8d73a),
+                                                                      fontSize: 60,
+                                                                      fontWeight: FontWeight.bold,
+                                                                      letterSpacing: 0,
+                                                                    ),),
+                                                                  ],
+                                                                )
+                                                            ),
+                                                          ],
+                                                        )
                                                     )
-                                                ),
+                                                  ],
+                                                )
                                               ],
-                                            )
-                                          )
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                  Column(
-                                    children: [
-                                      Stack(
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.only(top: 15, left: 26),
-                                            child: Stack(
+                                            ),
+                                            Column(
                                               children: [
-                                                Positioned(
-                                                  child: Row(
-                                                    children: const [
-                                                      Text("AVAILABLE PARKING SPACES", style: TextStyle(
-                                                        color: Colors.white,
-                                                        fontSize: 11,
-                                                        fontWeight: FontWeight.bold,
-                                                      ),
-                                                      )
-                                                    ],
-                                                  ),
-                                                ),
-                                              ],
-                                            )
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.only(top: 25, left: 26),
-                                            child: Stack(
-                                              children: [
-                                                Positioned(
-                                                    child: Row(
-                                                      children: [
-                                                        (availableParkingSpaces > 0 && availableParkingSpaces < 20) ?
-                                                        Text(availableParkingSpaces.toString(), style: const TextStyle(
-                                                          color: Color(0xfff8d73a),
-                                                          fontSize: 60,
-                                                          fontWeight: FontWeight.bold,
-                                                          letterSpacing: -3,
-                                                        ),) :
-                                                        Text(availableParkingSpaces.toString(), style: const TextStyle(
-                                                          color: Color(0xfff8d73a),
-                                                          fontSize: 60,
-                                                          fontWeight: FontWeight.bold,
-                                                          letterSpacing: 0,
-                                                        ),),
-                                                      ],
+                                                Stack(
+                                                  children: [
+                                                    Padding(
+                                                        padding: const EdgeInsets.only(top: 15, left: 26),
+                                                        child: Stack(
+                                                          children: [
+                                                            Positioned(
+                                                              child: Row(
+                                                                children: const [
+                                                                  Text("AVAILABLE PARKING SPACES", style: TextStyle(
+                                                                    color: Colors.white,
+                                                                    fontSize: 11,
+                                                                    fontWeight: FontWeight.bold,
+                                                                  ),
+                                                                  )
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        )
+                                                    ),
+                                                    Padding(
+                                                        padding: const EdgeInsets.only(top: 25, left: 26),
+                                                        child: Stack(
+                                                          children: [
+                                                            Positioned(
+                                                                child: Row(
+                                                                  children: [
+                                                                    (availableParkingSpaces > 0 && availableParkingSpaces < 20) ?
+                                                                    Text(availableParkingSpaces.toString(), style: const TextStyle(
+                                                                      color: Color(0xfff8d73a),
+                                                                      fontSize: 60,
+                                                                      fontWeight: FontWeight.bold,
+                                                                      letterSpacing: -3,
+                                                                    ),) :
+                                                                    Text(availableParkingSpaces.toString(), style: const TextStyle(
+                                                                      color: Color(0xfff8d73a),
+                                                                      fontSize: 60,
+                                                                      fontWeight: FontWeight.bold,
+                                                                      letterSpacing: 0,
+                                                                    ),),
+                                                                  ],
+                                                                )
+                                                            ),
+                                                          ],
+                                                        )
                                                     )
-                                                ),
+                                                  ],
+                                                )
                                               ],
-                                            )
-                                          )
-                                        ],
-                                      )
-                                    ],
-                                  ),
-                                  ],
-                              ),
-                              ],
-                            )
-                          )
-                      )
+                                            ),
+                                          ],
+                                        ),
+                                      ],
+                                    )
+                                )
+                            );
+                          }
+                        }
+                    ),
                     ),
                 //TRANSACTIONS
                 Positioned(
@@ -275,7 +318,7 @@ class _homePageState extends State<homePage> {
                     margin: const EdgeInsets.only(top: 250, left: 20, right: 20),
                     height: 450,
                     child: Padding(
-                        padding: const EdgeInsets.only(top: 15, left: 25, right: 15), //apply padding to all four sides
+                        padding: const EdgeInsets.only(top: 15, left: 20, right: 15), //apply padding to all four sides
                         child: Column(
                           children: [
                             Row(
@@ -306,8 +349,7 @@ class _homePageState extends State<homePage> {
                                         const SizedBox(width: 3),
                                         const Text("ACTIVE", style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 8,
-                                            color: Colors.white
+                                            fontSize: 8
                                         ),
                                         )
                                       ],
@@ -331,8 +373,7 @@ class _homePageState extends State<homePage> {
                                         const SizedBox(width: 3),
                                         const Text("PAST", style: TextStyle(
                                             fontWeight: FontWeight.bold,
-                                            fontSize: 8,
-                                            color: Colors.white
+                                            fontSize: 8
                                         ),
                                         )
                                       ],
@@ -348,7 +389,11 @@ class _homePageState extends State<homePage> {
                                     width: MediaQuery.of(context).size.width - 80,
                                     /*height: MediaQuery.of(context).size.height - 420,*/
                                     child: StreamBuilder<QuerySnapshot>(
-                                        stream: FirebaseFirestore.instance.collection('Transactions').snapshots(),
+                                        stream: FirebaseFirestore.instance
+                                            .collection('userData')
+                                            .doc(user.uid)
+                                            .collection("Transactions").orderBy('DateAndTime', descending: true)
+                                            .snapshots(),
                                         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                                           var itemCount = snapshot.data?.docs.length ?? 0;
                                           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -363,9 +408,10 @@ class _homePageState extends State<homePage> {
                                                 shrinkWrap: true,
                                                 itemCount: itemCount,
                                                 itemBuilder: (context, index){
-                                                  /*DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
-                                                    DateTime dt = (documentSnapshot["ParkingLocationLastUpdate"] as Timestamp).toDate();
-                                                    var d12 = DateFormat('MM/dd/yyyy, hh:mm a').format(dt);*/
+                                                  DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
+                                                  DateTime dt = (documentSnapshot["DateAndTime"] as Timestamp).toDate();
+                                                  var date = DateFormat('MM/dd/yyyy').format(dt);
+                                                  var time = DateFormat('hh:mm a').format(dt);
                                                   return Column(
                                                       children: [
                                                         ElevatedButton(
@@ -374,18 +420,16 @@ class _homePageState extends State<homePage> {
                                                             onPrimary: Colors.black,
                                                             /*minimumSize: Size(MediaQuery.of(context).size.width-20, 70),*/
                                                           ),onPressed: (){
-                                                          /*Navigator.push(context,
-                                                                MaterialPageRoute(
-                                                                  builder: (context) => homePage(),
-                                                                )
-                                                            );*/
+                                                              Navigator.pushNamed(context, '/transactionDetails', arguments: {
+                                                                'transactionIndex': index
+                                                              });
                                                         },
                                                           child: Column(
                                                             children: [
                                                               SizedBox(height: 10,),
                                                               Row(
                                                                 children: [
-                                                                  Text(/*documentSnapshot["ParkingLocationName"]*/ 'ABREEZA', style: const TextStyle(
+                                                                  Text(documentSnapshot["ParkingLocationName"], style: const TextStyle(
                                                                       color: Colors.white,
                                                                       fontWeight: FontWeight.bold,
                                                                       fontSize: 20
@@ -395,7 +439,7 @@ class _homePageState extends State<homePage> {
                                                               ),
                                                               Row(
                                                                 children: [
-                                                                  Text('Total: ' /*+ documentSnapshot["ParkingLocationTotal"].toString()*/, style: const TextStyle(
+                                                                  Text(date, style: const TextStyle(
                                                                       color: Colors.white,
                                                                       fontSize: 12
                                                                   ),),
@@ -403,7 +447,7 @@ class _homePageState extends State<homePage> {
                                                               ),
                                                               Row(
                                                                 children: [
-                                                                  Text('Available: ' /*+ documentSnapshot["ParkingLocationAvailable"]*/.toString(), style: const TextStyle(
+                                                                  Text(time, style: const TextStyle(
                                                                       color: Colors.white,
                                                                       fontSize: 12
                                                                   ),),
@@ -417,52 +461,6 @@ class _homePageState extends State<homePage> {
                                                       ]
                                                   );
                                                 });
-
-                                            /*ListView.builder(
-                                          scrollDirection: Axis.vertical,
-                                          shrinkWrap: true,
-                                          itemCount: snapshot.data!.docs.length,
-                                          itemBuilder: (context, index){
-                                            DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
-                                            return ElevatedButton(
-                                                style: ElevatedButton.styleFrom(
-                                                  primary: Colors.black,
-                                                  onPrimary: Colors.black,
-                                                  minimumSize: Size(MediaQuery.of(context).size.width-40, 70),
-                                                ),
-                                                onPressed: (){},
-                                                child: Column(
-                                                  children: [
-                                                    Row(
-                                                      children: [
-                                                        Text(documentSnapshot.get(1), style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontWeight: FontWeight.bold,
-                                                            fontSize: 23
-                                                        ),
-                                                        ),
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Text('Total', style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 12
-                                                        ),),
-                                                      ],
-                                                    ),
-                                                    Row(
-                                                      children: [
-                                                        Text('Available', style: TextStyle(
-                                                            color: Colors.white,
-                                                            fontSize: 12
-                                                        ),),
-                                                      ],
-                                                    ),
-                                                  ],
-                                                )
-                                            );
-                                          });*/
                                           }
                                         }
                                     ),

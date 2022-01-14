@@ -22,6 +22,7 @@ class _parkingLocationState extends State<parkingLocation> {
         //height: MediaQuery.of(context).size.height,
         //width: MediaQuery.of(context).size.width,
         child: SafeArea(
+          child: SingleChildScrollView(
             child: Container(
               margin: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
               //color: Colors.red,
@@ -67,7 +68,7 @@ class _parkingLocationState extends State<parkingLocation> {
                   Column(
                     children: [
                       Container(
-                        height: MediaQuery.of(context).size.height - 320,
+                        // height: MediaQuery.of(context).size.height - 320,
                         child: StreamBuilder<QuerySnapshot>(
                             stream: FirebaseFirestore.instance.collection('ParkingLocation').snapshots(),
                             builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
@@ -95,11 +96,9 @@ class _parkingLocationState extends State<parkingLocation> {
                                               onPrimary: Colors.black,
                                               minimumSize: Size(MediaQuery.of(context).size.width-40, 70),
                                             ),onPressed: (){
-                                            Navigator.push(context,
-                                                MaterialPageRoute(
-                                                  builder: (context) => homePage(),
-                                                )
-                                            );
+                                                Navigator.pushReplacementNamed(context, '/homePage', arguments: {
+                                                  'parkingLocationID': index
+                                                });
                                           },
                                             child: Column(
                                               children: [
@@ -229,6 +228,7 @@ class _parkingLocationState extends State<parkingLocation> {
                 ],
               ),
             )
+          )
         ),
       ),
     );

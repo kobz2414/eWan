@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_wan/GoogleFiles/google_sign_in.dart';
+import 'package:e_wan/homePageController.dart';
 import 'package:e_wan/parkingLocation.dart';
+import 'package:e_wan/signIn.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -16,17 +18,11 @@ class startPage extends StatefulWidget {
 class _homePageState extends State<startPage> {
   final user = FirebaseAuth.instance.currentUser!;
 
-
-
-  int availableParkingSpaces = 10;
-  int totalParkingSpaces = 10;
-  String parkingName = "SM ECOLAND";
-  String timeUpdated = "12:50 pm, December 09, 2021";
-
   @override
   Widget build(BuildContext context) {
 
     final user = FirebaseAuth.instance.currentUser!;
+
     return Scaffold(
         backgroundColor: Colors.white,
         body: SizedBox(
@@ -80,8 +76,7 @@ class _homePageState extends State<startPage> {
                                   children: [
                                     TextButton(
                                         onPressed: (){
-                                          final provider =
-                                          Provider.of<GoogleSignInProvider>(context, listen: false);
+                                          final provider = Provider.of<GoogleSignInProvider>(context, listen: false);
                                           provider.logout();
                                         },
                                         child:
@@ -115,7 +110,7 @@ class _homePageState extends State<startPage> {
                                       children: [
                                         SizedBox(height: 10),
                                         Column(
-                                          children: [
+                                          children: const [
                                             Text("CHOOSE A", style:
                                             TextStyle(
                                                 color: Colors.white,
@@ -159,134 +154,7 @@ class _homePageState extends State<startPage> {
                           ),
                         ),
                       ),
-                      //PARKING VACANCY DETAILS
-                      /*Positioned(
-                          child: Container(
-                              decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(20)),
-                                color: Colors.black,
-                              ),
-                              margin: const EdgeInsets.only(top: 120, left: 20, right: 20),
-                              height: 110,
-                              child: Padding(
-                                  padding: const EdgeInsets.only(top: 8, left: 15, right: 15), //apply padding to all four sides
-                                  child: Column(
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Column(
-                                            children: [
-                                              Stack(
-                                                children: [
-                                                  Padding(
-                                                      padding: const EdgeInsets.only(top: 15, left: 8),
-                                                      child: Stack(
-                                                        children: [
-                                                          Positioned(
-                                                            child: Row(
-                                                              children: const [
-                                                                Text("TOTAL PARKING SPACES", style: TextStyle(
-                                                                  color: Colors.white,
-                                                                  fontSize: 10,
-                                                                  fontWeight: FontWeight.bold,
-                                                                ),
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      )
-                                                  ),
-                                                  Padding(
-                                                      padding: const EdgeInsets.only(top: 23, left: 8),
-                                                      child: Stack(
-                                                        children: [
-                                                          Positioned(
-                                                              child: Row(
-                                                                children: [
-                                                                  (totalParkingSpaces > 0 && totalParkingSpaces < 20) ?
-                                                                  Text(totalParkingSpaces.toString(), style: const TextStyle(
-                                                                    color: Color(0xfffcb631),
-                                                                    fontSize: 60,
-                                                                    fontWeight: FontWeight.bold,
-                                                                    letterSpacing: -3,
-                                                                  ),) :
-                                                                  Text(totalParkingSpaces.toString(), style: const TextStyle(
-                                                                    color: Color(0xfffcb631),
-                                                                    fontSize: 60,
-                                                                    fontWeight: FontWeight.bold,
-                                                                    letterSpacing: 0,
-                                                                  ),),
-                                                                ],
-                                                              )
-                                                          ),
-                                                        ],
-                                                      )
-                                                  )
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                          Column(
-                                            children: [
-                                              Stack(
-                                                children: [
-                                                  Padding(
-                                                      padding: const EdgeInsets.only(top: 15, left: 26),
-                                                      child: Stack(
-                                                        children: [
-                                                          Positioned(
-                                                            child: Row(
-                                                              children: const [
-                                                                Text("AVAILABLE PARKING SPACES", style: TextStyle(
-                                                                  color: Colors.white,
-                                                                  fontSize: 11,
-                                                                  fontWeight: FontWeight.bold,
-                                                                ),
-                                                                )
-                                                              ],
-                                                            ),
-                                                          ),
-                                                        ],
-                                                      )
-                                                  ),
-                                                  Padding(
-                                                      padding: const EdgeInsets.only(top: 25, left: 26),
-                                                      child: Stack(
-                                                        children: [
-                                                          Positioned(
-                                                              child: Row(
-                                                                children: [
-                                                                  (availableParkingSpaces > 0 && availableParkingSpaces < 20) ?
-                                                                  Text(availableParkingSpaces.toString(), style: const TextStyle(
-                                                                    color: Color(0xfffcb631),
-                                                                    fontSize: 60,
-                                                                    fontWeight: FontWeight.bold,
-                                                                    letterSpacing: -3,
-                                                                  ),) :
-                                                                  Text(availableParkingSpaces.toString(), style: const TextStyle(
-                                                                    color: Color(0xfffcb631),
-                                                                    fontSize: 60,
-                                                                    fontWeight: FontWeight.bold,
-                                                                    letterSpacing: 0,
-                                                                  ),),
-                                                                ],
-                                                              )
-                                                          ),
-                                                        ],
-                                                      )
-                                                  )
-                                                ],
-                                              )
-                                            ],
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  )
-                              )
-                          )
-                      ),*/
+
                       //TRANSACTIONS
                       Positioned(
                         child: Container(
@@ -297,7 +165,7 @@ class _homePageState extends State<startPage> {
                           margin: const EdgeInsets.only(top: 250, left: 20, right: 20),
                           height: 450,
                           child: Padding(
-                              padding: const EdgeInsets.only(top: 15, left: 25, right: 15), //apply padding to all four sides
+                              padding: const EdgeInsets.only(top: 15, left: 20, right: 15), //apply padding to all four sides
                               child: Column(
                                 children: [
                                   Row(
@@ -368,7 +236,11 @@ class _homePageState extends State<startPage> {
                                     width: MediaQuery.of(context).size.width - 80,
                                     /*height: MediaQuery.of(context).size.height - 420,*/
                                     child: StreamBuilder<QuerySnapshot>(
-                                        stream: FirebaseFirestore.instance.collection('Transactions').snapshots(),
+                                        stream: FirebaseFirestore.instance
+                                                .collection('userData')
+                                                .doc(user.uid)
+                                                .collection("Transactions").orderBy('DateAndTime', descending: true)
+                                                .snapshots(),
                                         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
                                           var itemCount = snapshot.data?.docs.length ?? 0;
                                           if (snapshot.connectionState == ConnectionState.waiting) {
@@ -385,7 +257,8 @@ class _homePageState extends State<startPage> {
                                                 itemBuilder: (context, index){
                                                   DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
                                                   DateTime dt = (documentSnapshot["DateAndTime"] as Timestamp).toDate();
-                                                  var d12 = DateFormat('MM/dd/yyyy, hh:mm a').format(dt);
+                                                  var date = DateFormat('MM/dd/yyyy').format(dt);
+                                                  var time = DateFormat('hh:mm a').format(dt);
                                                   return Column(
                                                       children: [
                                                         ElevatedButton(
@@ -394,18 +267,16 @@ class _homePageState extends State<startPage> {
                                                             onPrimary: Colors.black,
                                                             /*minimumSize: Size(MediaQuery.of(context).size.width-20, 70),*/
                                                           ),onPressed: (){
-                                                          /*Navigator.push(context,
-                                                              MaterialPageRoute(
-                                                                builder: (context) => homePage(),
-                                                              )
-                                                          );*/
+                                                            Navigator.pushNamed(context, '/transactionDetails', arguments: {
+                                                              'transactionIndex': index
+                                                            });
                                                         },
                                                           child: Column(
                                                             children: [
                                                               SizedBox(height: 10,),
                                                               Row(
                                                                 children: [
-                                                                  Text(documentSnapshot["ParkingLocationID"], style: const TextStyle(
+                                                                  Text(documentSnapshot["ParkingLocationName"], style: const TextStyle(
                                                                       color: Colors.white,
                                                                       fontWeight: FontWeight.bold,
                                                                       fontSize: 20
@@ -415,7 +286,7 @@ class _homePageState extends State<startPage> {
                                                               ),
                                                               Row(
                                                                 children: [
-                                                                  Text('Total: ' /*+ documentSnapshot["ParkingLocationTotal"].toString()*/, style: const TextStyle(
+                                                                  Text(date, style: const TextStyle(
                                                                       color: Colors.white,
                                                                       fontSize: 12
                                                                   ),),
@@ -423,7 +294,7 @@ class _homePageState extends State<startPage> {
                                                               ),
                                                               Row(
                                                                 children: [
-                                                                  Text('Available: ' /*+ documentSnapshot["ParkingLocationAvailable"]*/.toString(), style: const TextStyle(
+                                                                  Text(time, style: const TextStyle(
                                                                       color: Colors.white,
                                                                       fontSize: 12
                                                                   ),),
@@ -437,52 +308,6 @@ class _homePageState extends State<startPage> {
                                                       ]
                                                   );
                                                 });
-
-                                            /*ListView.builder(
-                                        scrollDirection: Axis.vertical,
-                                        shrinkWrap: true,
-                                        itemCount: snapshot.data!.docs.length,
-                                        itemBuilder: (context, index){
-                                          DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
-                                          return ElevatedButton(
-                                              style: ElevatedButton.styleFrom(
-                                                primary: Colors.black,
-                                                onPrimary: Colors.black,
-                                                minimumSize: Size(MediaQuery.of(context).size.width-40, 70),
-                                              ),
-                                              onPressed: (){},
-                                              child: Column(
-                                                children: [
-                                                  Row(
-                                                    children: [
-                                                      Text(documentSnapshot.get(1), style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontWeight: FontWeight.bold,
-                                                          fontSize: 23
-                                                      ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      Text('Total', style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 12
-                                                      ),),
-                                                    ],
-                                                  ),
-                                                  Row(
-                                                    children: [
-                                                      Text('Available', style: TextStyle(
-                                                          color: Colors.white,
-                                                          fontSize: 12
-                                                      ),),
-                                                    ],
-                                                  ),
-                                                ],
-                                              )
-                                          );
-                                        });*/
                                           }
                                         }
                                     ),
