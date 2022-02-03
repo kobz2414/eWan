@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
@@ -13,20 +14,15 @@ class transactionDetails extends StatefulWidget {
 
 class _transactionDetailsState extends State<transactionDetails> {
   final user = FirebaseAuth.instance.currentUser!;
+  final database = FirebaseDatabase.instance.reference();
+  var data;
 
-  Map data = {};
-
-  String transactionID = "SME01007202200001";
-  String dateAndTime = "JANUARY 07, 2022";
-  String parkingArea = "SM ECOLAND";
-  String parkingSlot = "SME001";
-  String status = "Pending";
-
+  Map args = {};
 
   @override
   Widget build(BuildContext context) {
 
-    data = ModalRoute.of(context)!.settings.arguments as Map;
+    args = ModalRoute.of(context)!.settings.arguments as Map;
 
     return Scaffold(
       backgroundColor: Color(0xfff6fbff),
@@ -37,14 +33,9 @@ class _transactionDetailsState extends State<transactionDetails> {
             child: SingleChildScrollView(
                 child: Container(
                   margin: EdgeInsets.only(left: 20, right: 20),
-                  child: StreamBuilder<QuerySnapshot>(
-                      stream: FirebaseFirestore.instance
-                          .collection('userData')
-                          .doc(user.uid)
-                          .collection("Transactions").orderBy('DateAndTime', descending: true)
-                          .snapshots(),
-                      builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                        var itemCount = snapshot.data?.docs.length ?? 0;
+                  child: StreamBuilder(
+                      stream: database.child("UserData").child(user.uid).child("Transactions").onValue,
+                      builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return const Center(
                             child: CircularProgressIndicator(),
@@ -52,18 +43,17 @@ class _transactionDetailsState extends State<transactionDetails> {
                         } else if (snapshot.hasError) {
                           return const Text("Something went wrong");
                         }else {
-                          DocumentSnapshot documentSnapshot = snapshot.data!.docs[data['transactionIndex']];
-                          DateTime dt = (documentSnapshot["DateAndTime"] as Timestamp).toDate();
-                          var d12 = DateFormat('MM/dd/yyyy, hh:mm a').format(dt);
+                          data = (snapshot.data! as Event).snapshot.value;
+
                           return Column(
                             children: [
-                              SizedBox(
+                              const SizedBox(
                                 height: 50,
                               ),
                               Container(
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
+                                  children: const [
                                     Text("TRANSACTION DETAILS", style: TextStyle(
                                         color: Colors.black,
                                         fontWeight: FontWeight.w800,
@@ -74,11 +64,11 @@ class _transactionDetailsState extends State<transactionDetails> {
                                 ),
                               ),
                               //TRANSACTION ID
-                              SizedBox(
+                              const SizedBox(
                                 height: 40,
                               ),
                               Row(
-                                children: [
+                                children: const [
                                   Text('TRANSACTION ID', style: TextStyle(
                                       color: Color(0xff5d6974),
                                       fontWeight: FontWeight.bold,
@@ -89,7 +79,7 @@ class _transactionDetailsState extends State<transactionDetails> {
                               ),
                               Row(
                                 children: [
-                                  Text(documentSnapshot.id, style: TextStyle(
+                                  Text(args["transactionNumber"].toString(), style: TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 20
@@ -98,11 +88,11 @@ class _transactionDetailsState extends State<transactionDetails> {
                                 ],
                               ),
                               //DATE AND TIME
-                              SizedBox(
+                              const SizedBox(
                                 height: 25,
                               ),
                               Row(
-                                children: [
+                                children: const [
                                   Text("DATE AND TIME", style: TextStyle(
                                       color: Color(0xff5d6974),
                                       fontWeight: FontWeight.bold,
@@ -113,7 +103,7 @@ class _transactionDetailsState extends State<transactionDetails> {
                               ),
                               Row(
                                 children: [
-                                  Text(d12, style: TextStyle(
+                                  Text(data[args["transactionNumber"]]["Date"] + " - " + data[args["transactionNumber"]]["Time"], style: const TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 20
@@ -122,11 +112,11 @@ class _transactionDetailsState extends State<transactionDetails> {
                                 ],
                               ),
                               //PARKING AREA
-                              SizedBox(
+                              const SizedBox(
                                 height: 25,
                               ),
                               Row(
-                                children: [
+                                children: const [
                                   Text("PARKING AREA", style: TextStyle(
                                       color: Color(0xff5d6974),
                                       fontWeight: FontWeight.bold,
@@ -137,7 +127,7 @@ class _transactionDetailsState extends State<transactionDetails> {
                               ),
                               Row(
                                 children: [
-                                  Text(documentSnapshot['ParkingLocationName'], style: TextStyle(
+                                  Text(data[args["transactionNumber"]]["ParkingLocationName"], style: const TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 20
@@ -146,11 +136,11 @@ class _transactionDetailsState extends State<transactionDetails> {
                                 ],
                               ),
                               //PARKING SLOT
-                              SizedBox(
+                              const SizedBox(
                                 height: 25,
                               ),
                               Row(
-                                children: [
+                                children: const [
                                   Text("PARKING SLOT", style: TextStyle(
                                       color: Color(0xff5d6974),
                                       fontWeight: FontWeight.bold,
@@ -161,7 +151,7 @@ class _transactionDetailsState extends State<transactionDetails> {
                               ),
                               Row(
                                 children: [
-                                  Text(documentSnapshot['ParkingSlotID'], style: TextStyle(
+                                  Text(data[args["transactionNumber"]]["ParkingSlotID"], style: const TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 20
@@ -170,11 +160,11 @@ class _transactionDetailsState extends State<transactionDetails> {
                                 ],
                               ),
                               //STATUS
-                              SizedBox(
+                              const SizedBox(
                                 height: 25,
                               ),
                               Row(
-                                children: [
+                                children: const [
                                   Text("STATUS", style: TextStyle(
                                       color: Color(0xff5d6974),
                                       fontWeight: FontWeight.bold,
@@ -185,7 +175,7 @@ class _transactionDetailsState extends State<transactionDetails> {
                               ),
                               Row(
                                 children: [
-                                  Text(documentSnapshot['TransactionStatus'], style: TextStyle(
+                                  Text(data[args["transactionNumber"]]["TransactionStatus"], style: const TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 20
@@ -193,7 +183,7 @@ class _transactionDetailsState extends State<transactionDetails> {
                                   )
                                 ],
                               ),
-                              SizedBox(
+                              const SizedBox(
                                 height: 50,
                               ),
                               Container(
@@ -205,8 +195,8 @@ class _transactionDetailsState extends State<transactionDetails> {
                                           primary: Color(0xfff8d73a),
                                           onPrimary: Colors.black,
                                           minimumSize: Size(MediaQuery.of(context).size.width-150, 40),
-                                          shape: new RoundedRectangleBorder(
-                                              borderRadius: new BorderRadius.circular(30.0)
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.circular(30.0)
                                           )
                                       ),
                                       icon: const FaIcon(FontAwesomeIcons.mapMarked, color: Colors.black,),
@@ -226,7 +216,7 @@ class _transactionDetailsState extends State<transactionDetails> {
                                         onPressed: (){
                                           Navigator.pop(context);
                                         },
-                                        child: Text("CANCEL", style: TextStyle(
+                                        child: const Text("CANCEL", style: TextStyle(
                                             fontWeight: FontWeight.bold
                                         ),
                                         ),
@@ -234,8 +224,8 @@ class _transactionDetailsState extends State<transactionDetails> {
                                             primary: Colors.white,
                                             onPrimary: Colors.black,
                                             minimumSize: Size(MediaQuery.of(context).size.width-150, 40),
-                                            shape: new RoundedRectangleBorder(
-                                                borderRadius: new BorderRadius.circular(30.0)
+                                            shape: RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.circular(30.0)
                                             )
                                         )
                                     )

@@ -1,5 +1,6 @@
 import 'package:e_wan/homePage.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:path/path.dart';
@@ -13,9 +14,14 @@ class parkingLocation extends StatefulWidget {
 }
 
 class _parkingLocationState extends State<parkingLocation> {
+  final database = FirebaseDatabase.instance.reference();
+  int availableParkingSpaces = 0;
+  int totalParkingSpaces = 0;
+  var data;
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: Color(0xfff6fbff),
       body: SizedBox(
@@ -24,11 +30,11 @@ class _parkingLocationState extends State<parkingLocation> {
         child: SafeArea(
           child: SingleChildScrollView(
             child: Container(
-              margin: EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
+              margin: const EdgeInsets.only(left: 20, right: 20, top: 10, bottom: 10),
               //color: Colors.red,
               child: Column(
                 children: [
-                  SizedBox(height: 80),
+                  const SizedBox(height: 80),
                   Column(
                     children: const [
                       Text("CHOOSE A", style:
@@ -65,14 +71,14 @@ class _parkingLocationState extends State<parkingLocation> {
                     ],
                   ),
                   const SizedBox(height: 40),
+                  // Parking Locations
                   Column(
                     children: [
                       Container(
                         // height: MediaQuery.of(context).size.height - 320,
-                        child: StreamBuilder<QuerySnapshot>(
-                            stream: FirebaseFirestore.instance.collection('ParkingLocation').snapshots(),
-                            builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                              var itemCount = snapshot.data?.docs.length ?? 0;
+                        child: StreamBuilder(
+                            stream: database.child("ParkingSlot").onValue,
+                            builder: (context, snapshot) {
                               if (snapshot.connectionState == ConnectionState.waiting) {
                                 return const Center(
                                   child: CircularProgressIndicator(),
@@ -80,32 +86,35 @@ class _parkingLocationState extends State<parkingLocation> {
                               } else if (snapshot.hasError) {
                                 return const Text("Something went wrong");
                               }else {
+                                data = (snapshot.data! as Event).snapshot.value;
+                                var entryList = data.entries.toList();
+
                                 return ListView.builder(
                                     scrollDirection: Axis.vertical,
                                     shrinkWrap: true,
-                                    itemCount: itemCount,
+                                    itemCount: data.length,
                                     itemBuilder: (context, index){
-                                      DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
-                                      DateTime dt = (documentSnapshot["ParkingLocationLastUpdate"] as Timestamp).toDate();
-                                      var d12 = DateFormat('MM/dd/yyyy, hh:mm a').format(dt);
                                       return Column(
                                         children: [
                                           ElevatedButton(
                                             style: ElevatedButton.styleFrom(
                                               primary: Colors.black,
                                               onPrimary: Colors.black,
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(20)
+                                              ),
                                               minimumSize: Size(MediaQuery.of(context).size.width-40, 70),
                                             ),onPressed: (){
                                                 Navigator.pushReplacementNamed(context, '/homePage', arguments: {
-                                                  'parkingLocationID': index
+                                                  'parkingLocationID': entryList[index].key
                                                 });
                                           },
                                             child: Column(
                                               children: [
-                                                SizedBox(height: 10,),
+                                                const SizedBox(height: 10,),
                                                 Column(
                                                   children: [
-                                                    Text(documentSnapshot["ParkingLocationName"], style: const TextStyle(
+                                                    Text(entryList[index].key, style: const TextStyle(
                                                         color: Colors.white,
                                                         fontWeight: FontWeight.bold,
                                                         fontSize: 20
@@ -113,9 +122,9 @@ class _parkingLocationState extends State<parkingLocation> {
                                                     ),
                                                   ],
                                                 ),
-                                                Column(
+                                                /*Column(
                                                   children: [
-                                                    Text('Total: ' + documentSnapshot["ParkingLocationTotal"].toString(), style: const TextStyle(
+                                                    Text('Total: ' + totalParkingSpaces.toString(), style: const TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 12
                                                     ),),
@@ -123,26 +132,25 @@ class _parkingLocationState extends State<parkingLocation> {
                                                 ),
                                                 Column(
                                                   children: [
-                                                    Text('Available: ' + documentSnapshot["ParkingLocationAvailable"].toString(), style: const TextStyle(
+                                                    Text('Available: ' + availableParkingSpaces.toString(), style: const TextStyle(
                                                         color: Colors.white,
                                                         fontSize: 12
                                                     ),),
                                                   ],
-                                                ),
+                                                ),*/
                                                 SizedBox(height: 10,),
-                                                Column(
-                                                  children: [
-                                                    Text('LAST UPDATED: ' + d12.toString(), style:
-                                                    const TextStyle(
-                                                        fontSize: 12,
-                                                        color: Colors.white,
-                                                        fontFamily: "Metropolis",
-                                                        fontWeight: FontWeight.w700
-                                                    ),
-                                                    )
-                                                  ],
-                                                ),
-                                                const SizedBox(height: 10,)
+                                                // Column(
+                                                //   children: [
+                                                //     Text('LAST UPDATED: ' + d12.toString(), style:
+                                                //     const TextStyle(
+                                                //         fontSize: 12,
+                                                //         color: Colors.white,
+                                                //         fontFamily: "Metropolis",
+                                                //         fontWeight: FontWeight.w700
+                                                //     ),
+                                                //     )
+                                                //   ],
+                                                // ),
                                               ],
                                             ),
                                           ),

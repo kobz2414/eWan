@@ -1,11 +1,8 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:e_wan/GoogleFiles/google_sign_in.dart';
-import 'package:e_wan/homePageController.dart';
 import 'package:e_wan/parkingLocation.dart';
-import 'package:e_wan/signIn.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
 class startPage extends StatefulWidget {
@@ -17,12 +14,12 @@ class startPage extends StatefulWidget {
 
 class _homePageState extends State<startPage> {
   final user = FirebaseAuth.instance.currentUser!;
+  var data;
+
+  final dbData = FirebaseDatabase.instance.reference().child("UserData").child(FirebaseAuth.instance.currentUser!.uid).child("Transactions").onValue;
 
   @override
   Widget build(BuildContext context) {
-
-    final user = FirebaseAuth.instance.currentUser!;
-
     return Scaffold(
         backgroundColor: Colors.white,
         body: SizedBox(
@@ -33,6 +30,7 @@ class _homePageState extends State<startPage> {
                     child:
                       Stack(
                     children: [
+                      //LOGOUT AND ACCOUNT
                       Positioned(
                           top: 13,
                           left: 20,
@@ -91,6 +89,7 @@ class _homePageState extends State<startPage> {
                               )
                             ],
                           )),
+
                       //PARKING NAME
                       Positioned(
                         child:Container(
@@ -195,6 +194,7 @@ class _homePageState extends State<startPage> {
                                               ),
                                               const SizedBox(width: 3),
                                               const Text("ACTIVE", style: TextStyle(
+                                                  color: Colors.white,
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 8
                                               ),
@@ -219,6 +219,7 @@ class _homePageState extends State<startPage> {
                                               ),
                                               const SizedBox(width: 3),
                                               const Text("PAST", style: TextStyle(
+                                                  color: Colors.white,
                                                   fontWeight: FontWeight.bold,
                                                   fontSize: 8
                                               ),
@@ -232,17 +233,11 @@ class _homePageState extends State<startPage> {
                                   const SizedBox(height: 20,),
                                   Column(
                                       children: [
-                                  Container(
+                                  SizedBox(
                                     width: MediaQuery.of(context).size.width - 80,
-                                    /*height: MediaQuery.of(context).size.height - 420,*/
-                                    child: StreamBuilder<QuerySnapshot>(
-                                        stream: FirebaseFirestore.instance
-                                                .collection('userData')
-                                                .doc(user.uid)
-                                                .collection("Transactions").orderBy('DateAndTime', descending: true)
-                                                .snapshots(),
-                                        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                                          var itemCount = snapshot.data?.docs.length ?? 0;
+                                    child: StreamBuilder(
+                                        stream: dbData,
+                                        builder: (context, snapshot) {
                                           if (snapshot.connectionState == ConnectionState.waiting) {
                                             return const Center(
                                               child: CircularProgressIndicator(),
@@ -250,25 +245,24 @@ class _homePageState extends State<startPage> {
                                           } else if (snapshot.hasError) {
                                             return const Text("Something went wrong");
                                           }else {
+                                            data = (snapshot.data! as Event).snapshot.value;
+                                            var entryList = data.entries.toList();
+
                                             return ListView.builder(
                                                 scrollDirection: Axis.vertical,
                                                 shrinkWrap: true,
-                                                itemCount: itemCount,
+                                                itemCount: data.length,
                                                 itemBuilder: (context, index){
-                                                  DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
-                                                  DateTime dt = (documentSnapshot["DateAndTime"] as Timestamp).toDate();
-                                                  var date = DateFormat('MM/dd/yyyy').format(dt);
-                                                  var time = DateFormat('hh:mm a').format(dt);
+
                                                   return Column(
                                                       children: [
                                                         ElevatedButton(
                                                           style: ElevatedButton.styleFrom(
-                                                            primary: Colors.black,
-                                                            onPrimary: Colors.black,
+                                                            primary: entryList[index].value["TransactionStatus"] == "Active" ? Color(0xfff8d73a) : Colors.white,
                                                             /*minimumSize: Size(MediaQuery.of(context).size.width-20, 70),*/
                                                           ),onPressed: (){
                                                             Navigator.pushNamed(context, '/transactionDetails', arguments: {
-                                                              'transactionIndex': index
+                                                              'transactionNumber': entryList[index].key
                                                             });
                                                         },
                                                           child: Column(
@@ -276,8 +270,8 @@ class _homePageState extends State<startPage> {
                                                               SizedBox(height: 10,),
                                                               Row(
                                                                 children: [
-                                                                  Text(documentSnapshot["ParkingLocationName"], style: const TextStyle(
-                                                                      color: Colors.white,
+                                                                  Text(entryList[index].value["ParkingLocationName"], style: const TextStyle(
+                                                                      color:Color(0xff252626),
                                                                       fontWeight: FontWeight.bold,
                                                                       fontSize: 20
                                                                   ),
@@ -286,16 +280,16 @@ class _homePageState extends State<startPage> {
                                                               ),
                                                               Row(
                                                                 children: [
-                                                                  Text(date, style: const TextStyle(
-                                                                      color: Colors.white,
+                                                                  Text(entryList[index].value["Date"], style: const TextStyle(
+                                                                      color:Color(0xff252626),
                                                                       fontSize: 12
                                                                   ),),
                                                                 ],
                                                               ),
                                                               Row(
                                                                 children: [
-                                                                  Text(time, style: const TextStyle(
-                                                                      color: Colors.white,
+                                                                  Text(entryList[index].value["Time"], style: TextStyle(
+                                                                      color: Color(0xff252626),
                                                                       fontSize: 12
                                                                   ),),
                                                                 ],

@@ -4,7 +4,9 @@ import 'package:e_wan/homePageController.dart';
 import 'package:e_wan/parkingLocation.dart';
 import 'package:e_wan/signIn.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 
@@ -17,20 +19,25 @@ class homePage extends StatefulWidget {
 
 class _homePageState extends State<homePage> {
   final user = FirebaseAuth.instance.currentUser!;
+  final databaseParking = FirebaseDatabase.instance.reference();
+  final databaseTransactions = FirebaseDatabase.instance.reference();
+  var dbData;
+  var dbTransactions;
+  Map args = {};
 
-  Map data = {};
+  var currDate;
+  var currTime;
 
   int availableParkingSpaces = 0;
   int totalParkingSpaces = 0;
-  String parkingName = "";
-  String timeUpdated = "";
 
   @override
   Widget build(BuildContext context) {
 
-    data = ModalRoute.of(context)!.settings.arguments as Map;
+    args = ModalRoute.of(context)!.settings.arguments as Map;
 
-    final user = FirebaseAuth.instance.currentUser!;
+    var parkingLocationID = args["parkingLocationID"];
+
     return Scaffold(
       backgroundColor: Colors.white,
 
@@ -101,83 +108,98 @@ class _homePageState extends State<homePage> {
                 //PARKING NAME
                 Positioned(
                     child:
-                    StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance.collection('ParkingLocation').snapshots(),
-                        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                          if (snapshot.connectionState == ConnectionState.waiting) {
-                            return const Center(
-                              child: CircularProgressIndicator(),
-                            );
-                          } else if (snapshot.hasError) {
-                            return const Text("Something went wrong");
-                          }else {
-                            //String
-                            DocumentSnapshot documentSnapshot = snapshot.data!.docs[data['parkingLocationID']];
-                            DateTime dt = (documentSnapshot["ParkingLocationLastUpdate"] as Timestamp).toDate();
-                            var d12 = DateFormat('MM/dd/yyyy, hh:mm a').format(dt);
-                            parkingName = documentSnapshot['ParkingLocationName'];
-                            timeUpdated = d12;
+                    Container(
+                      decoration: const BoxDecoration(
+                        borderRadius: BorderRadius.all(Radius.circular(20)),
+                        color: Color(0xff5d6974),
+                      ),
+                      margin: const EdgeInsets.only(top: 60, left: 20, right: 20),
+                      height: 150,
+                      child: Padding(
+                          padding: const EdgeInsets.all(15), //apply padding to all four sides
+                          child:
+                          Container(
+                              child: InkWell(
+                                child: Column(
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Text(parkingLocationID, style: const TextStyle(
+                                            color: Colors.white,
+                                            fontWeight: FontWeight.w800,
+                                            fontSize: 23
+                                        ),)
+                                      ],
+                                    ),
+                                    StreamBuilder(
+                                        stream: databaseParking.child("ParkingSlot").child(parkingLocationID).onValue,
+                                        builder: (context, snapshot) {
+                                          if (snapshot.connectionState == ConnectionState.waiting) {
+                                            return const Center(
+                                              child: CircularProgressIndicator(),
+                                            );
+                                          } else if (snapshot.hasError) {
+                                            return const Text("Something went wrong");
+                                          }else{
+                                            final DateTime now = DateTime.now();
+                                            currDate = DateFormat('MM/dd/yyyy').format(now);
+                                            currTime = DateFormat('hh:mm:ss a').format(now);
+                                          }
+                                          return Row(
+                                            children: [
+                                              SizedBox(height: 10),
+                                              Text("LAST UPDATED: " + currDate + " " + currTime, style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontWeight: FontWeight.w500,
+                                                  fontSize: 8
+                                              ),)
+                                            ],
+                                          );
+                                        }
+                                    ),
 
-                            return Container(
-                              decoration: const BoxDecoration(
-                                borderRadius: BorderRadius.all(Radius.circular(20)),
-                                color: Color(0xff5d6974),
-                              ),
-                              margin: const EdgeInsets.only(top: 60, left: 20, right: 20),
-                              height: 150,
-                              child: Padding(
-                                  padding: const EdgeInsets.all(15), //apply padding to all four sides
-                                  child:
-                                  Container(
-                                      child: InkWell(
-                                        child: Column(
-                                          children: [
-                                            Row(
-                                              children: [
-                                                Text(parkingName, style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.w800,
-                                                    fontSize: 20
-                                                ),)
-                                              ],
-                                            ),
-                                            Row(
-                                              children: [
-                                                Text("LAST UPDATED: " + timeUpdated, style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontWeight: FontWeight.w500,
-                                                    fontSize: 8
-                                                ),)
-                                              ],
-                                            )
-                                          ],
-                                        ),
-                                        onTap: () {
-                                          Navigator.pushNamed(context, '/parkingLocation');
-                                        },
-                                      )
-                                  )
-                              ),
-                            );
-                          }
-                        }
-                    ),
+                                  ],
+                                ),
+                                onTap: () {
+                                  Navigator.pushNamed(context, '/parkingLocation');
+                                },
+                              )
+                          )
+                      ),
+                    )
                 ),
                 //PARKING VACANCY DETAILS
                 Positioned(
-                    child: StreamBuilder<QuerySnapshot>(
-                        stream: FirebaseFirestore.instance.collection('ParkingLocation').snapshots(),
-                        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+                    child: StreamBuilder(
+                        stream: databaseParking.child("ParkingSlot").child(parkingLocationID).onValue,
+                        builder: (context, snapshot) {
                           if (snapshot.connectionState == ConnectionState.waiting) {
                             return const Center(
                               child: CircularProgressIndicator(),
                             );
                           } else if (snapshot.hasError) {
                             return const Text("Something went wrong");
-                          }else {
-                            DocumentSnapshot documentSnapshot = snapshot.data!.docs[data['parkingLocationID']];
-                            totalParkingSpaces = int.parse(documentSnapshot["ParkingLocationTotal"].toString());
-                            availableParkingSpaces = int.parse(documentSnapshot["ParkingLocationAvailable"].toString());
+                          }else{
+
+                            dbData = (snapshot.data! as Event).snapshot.value;
+                            var entryList = dbData.entries.toList();
+
+                            if(dbData != null){
+                              totalParkingSpaces =  dbData.length;
+                            }
+
+                            int occupied = 0;
+                            int vacant = 0;
+
+                            for(int x = 0; x < totalParkingSpaces; x++ ){
+                              if(entryList[x].value["ArduinoStatus"] != "Vacant" ){
+                                occupied += 1;
+                              }
+                            }
+
+                            availableParkingSpaces = totalParkingSpaces - occupied;
+
+                            //availableParkingSpaces = int.parse(data[args['parkingLocationID']]["ParkingLocationAvailable"].toString());
 
                             return Container(
                                 decoration: const BoxDecoration(
@@ -310,13 +332,38 @@ class _homePageState extends State<homePage> {
                     ),
                 //TRANSACTIONS
                 Positioned(
+                    child: Container(
+                      margin: const EdgeInsets.only(top: 240),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          ElevatedButton.icon(
+                            style: ElevatedButton.styleFrom(
+                                primary: Color(0xfff8d73a),
+                                onPrimary: Colors.black,
+                                minimumSize: Size(MediaQuery.of(context).size.width-43, 40),
+                                shape: new RoundedRectangleBorder(
+                                    borderRadius: new BorderRadius.circular(30.0)
+                                )
+                            ),
+                            icon: const FaIcon(FontAwesomeIcons.mapMarked, color: Colors.black,),
+                            label: const Text('PARKING MAP', style: TextStyle(
+                                fontWeight: FontWeight.bold
+                            ),),
+                            onPressed: (){},
+                          )
+                        ],
+                      ),
+                    ),
+                ),
+                Positioned(
                   child: Container(
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                       color: Color(0xff5d6974),
                     ),
-                    margin: const EdgeInsets.only(top: 250, left: 20, right: 20),
-                    height: 450,
+                    margin: const EdgeInsets.only(top: 330, left: 20, right: 20),
+                    height: 370,
                     child: Padding(
                         padding: const EdgeInsets.only(top: 15, left: 20, right: 15), //apply padding to all four sides
                         child: Column(
@@ -348,6 +395,7 @@ class _homePageState extends State<homePage> {
                                         ),
                                         const SizedBox(width: 3),
                                         const Text("ACTIVE", style: TextStyle(
+                                            color: Colors.white,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 8
                                         ),
@@ -372,6 +420,7 @@ class _homePageState extends State<homePage> {
                                         ),
                                         const SizedBox(width: 3),
                                         const Text("PAST", style: TextStyle(
+                                            color: Colors.white,
                                             fontWeight: FontWeight.bold,
                                             fontSize: 8
                                         ),
@@ -388,14 +437,9 @@ class _homePageState extends State<homePage> {
                                   Container(
                                     width: MediaQuery.of(context).size.width - 80,
                                     /*height: MediaQuery.of(context).size.height - 420,*/
-                                    child: StreamBuilder<QuerySnapshot>(
-                                        stream: FirebaseFirestore.instance
-                                            .collection('userData')
-                                            .doc(user.uid)
-                                            .collection("Transactions").orderBy('DateAndTime', descending: true)
-                                            .snapshots(),
-                                        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-                                          var itemCount = snapshot.data?.docs.length ?? 0;
+                                    child: StreamBuilder(
+                                        stream: databaseTransactions.child("UserData").child(user.uid).child("Transactions").onValue,
+                                        builder: (context, snapshot) {
                                           if (snapshot.connectionState == ConnectionState.waiting) {
                                             return const Center(
                                               child: CircularProgressIndicator(),
@@ -403,34 +447,33 @@ class _homePageState extends State<homePage> {
                                           } else if (snapshot.hasError) {
                                             return const Text("Something went wrong");
                                           }else {
+                                            dbTransactions = (snapshot.data! as Event).snapshot.value;
+                                            var entryList = dbTransactions.entries.toList();
+
                                             return ListView.builder(
                                                 scrollDirection: Axis.vertical,
                                                 shrinkWrap: true,
-                                                itemCount: itemCount,
+                                                itemCount: dbTransactions.length,
                                                 itemBuilder: (context, index){
-                                                  DocumentSnapshot documentSnapshot = snapshot.data!.docs[index];
-                                                  DateTime dt = (documentSnapshot["DateAndTime"] as Timestamp).toDate();
-                                                  var date = DateFormat('MM/dd/yyyy').format(dt);
-                                                  var time = DateFormat('hh:mm a').format(dt);
+
                                                   return Column(
                                                       children: [
                                                         ElevatedButton(
                                                           style: ElevatedButton.styleFrom(
-                                                            primary: Colors.black,
-                                                            onPrimary: Colors.black,
+                                                            primary: entryList[index].value["TransactionStatus"] == "Active" ? Color(0xfff8d73a) : Colors.white,
                                                             /*minimumSize: Size(MediaQuery.of(context).size.width-20, 70),*/
                                                           ),onPressed: (){
-                                                              Navigator.pushNamed(context, '/transactionDetails', arguments: {
-                                                                'transactionIndex': index
-                                                              });
+                                                          Navigator.pushNamed(context, '/transactionDetails', arguments: {
+                                                            'transactionNumber': entryList[index].key
+                                                          });
                                                         },
                                                           child: Column(
                                                             children: [
                                                               SizedBox(height: 10,),
                                                               Row(
                                                                 children: [
-                                                                  Text(documentSnapshot["ParkingLocationName"], style: const TextStyle(
-                                                                      color: Colors.white,
+                                                                  Text(entryList[index].value["ParkingLocationName"], style: const TextStyle(
+                                                                      color:Color(0xff252626),
                                                                       fontWeight: FontWeight.bold,
                                                                       fontSize: 20
                                                                   ),
@@ -439,16 +482,16 @@ class _homePageState extends State<homePage> {
                                                               ),
                                                               Row(
                                                                 children: [
-                                                                  Text(date, style: const TextStyle(
-                                                                      color: Colors.white,
+                                                                  Text(entryList[index].value["Date"], style: const TextStyle(
+                                                                      color:Color(0xff252626),
                                                                       fontSize: 12
                                                                   ),),
                                                                 ],
                                                               ),
                                                               Row(
                                                                 children: [
-                                                                  Text(time, style: const TextStyle(
-                                                                      color: Colors.white,
+                                                                  Text(entryList[index].value["Time"], style: TextStyle(
+                                                                      color: Color(0xff252626),
                                                                       fontSize: 12
                                                                   ),),
                                                                 ],
