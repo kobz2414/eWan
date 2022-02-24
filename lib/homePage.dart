@@ -35,7 +35,6 @@ class _homePageState extends State<homePage> {
   Widget build(BuildContext context) {
 
     args = ModalRoute.of(context)!.settings.arguments as Map;
-
     var parkingLocationID = args["parkingLocationID"];
 
     return Scaffold(
@@ -143,7 +142,7 @@ class _homePageState extends State<homePage> {
                                           }else{
                                             final DateTime now = DateTime.now();
                                             currDate = DateFormat('MM/dd/yyyy').format(now);
-                                            currTime = DateFormat('hh:mm:ss a').format(now);
+                                            currTime = DateFormat('hh:mm:ss a').format(now.subtract(Duration( hours: 4 )));
                                           }
                                           return Row(
                                             children: [
@@ -330,7 +329,6 @@ class _homePageState extends State<homePage> {
                         }
                     ),
                     ),
-                //TRANSACTIONS
                 Positioned(
                     child: Container(
                       margin: const EdgeInsets.only(top: 240),
@@ -342,20 +340,25 @@ class _homePageState extends State<homePage> {
                                 primary: Color(0xfff8d73a),
                                 onPrimary: Colors.black,
                                 minimumSize: Size(MediaQuery.of(context).size.width-43, 40),
-                                shape: new RoundedRectangleBorder(
-                                    borderRadius: new BorderRadius.circular(30.0)
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(30.0)
                                 )
                             ),
                             icon: const FaIcon(FontAwesomeIcons.mapMarked, color: Colors.black,),
                             label: const Text('PARKING MAP', style: TextStyle(
                                 fontWeight: FontWeight.bold
                             ),),
-                            onPressed: (){},
+                            onPressed: (){
+                              Navigator.pushNamed(context, '/parkingSlot', arguments: {
+                                'parkingLocationID': parkingLocationID
+                              });
+                            },
                           )
                         ],
                       ),
                     ),
                 ),
+                //TRANSACTIONS
                 Positioned(
                   child: Container(
                     decoration: const BoxDecoration(
@@ -440,70 +443,100 @@ class _homePageState extends State<homePage> {
                                     child: StreamBuilder(
                                         stream: databaseTransactions.child("UserData").child(user.uid).child("Transactions").onValue,
                                         builder: (context, snapshot) {
-                                          if (snapshot.connectionState == ConnectionState.waiting) {
-                                            return const Center(
-                                              child: CircularProgressIndicator(),
-                                            );
-                                          } else if (snapshot.hasError) {
-                                            return const Text("Something went wrong");
-                                          }else {
-                                            dbTransactions = (snapshot.data! as Event).snapshot.value;
-                                            var entryList = dbTransactions.entries.toList();
+                                          if(snapshot.hasData){
+                                            if (snapshot.connectionState == ConnectionState.waiting) {
+                                              return const Center(
+                                                child: CircularProgressIndicator(),
+                                              );
+                                            } else if (snapshot.hasError) {
+                                              return const Text("Something went wrong");
+                                            }else{
+                                              dbTransactions = (snapshot.data! as Event).snapshot.value;
 
-                                            return ListView.builder(
-                                                scrollDirection: Axis.vertical,
-                                                shrinkWrap: true,
-                                                itemCount: dbTransactions.length,
-                                                itemBuilder: (context, index){
+                                              if(dbTransactions != null){
+                                                var entryList = dbTransactions.entries.toList();
 
-                                                  return Column(
-                                                      children: [
-                                                        ElevatedButton(
-                                                          style: ElevatedButton.styleFrom(
-                                                            primary: entryList[index].value["TransactionStatus"] == "Active" ? Color(0xfff8d73a) : Colors.white,
-                                                            /*minimumSize: Size(MediaQuery.of(context).size.width-20, 70),*/
-                                                          ),onPressed: (){
-                                                          Navigator.pushNamed(context, '/transactionDetails', arguments: {
-                                                            'transactionNumber': entryList[index].key
-                                                          });
-                                                        },
-                                                          child: Column(
-                                                            children: [
-                                                              SizedBox(height: 10,),
-                                                              Row(
+                                                return ListView.builder(
+                                                    scrollDirection: Axis.vertical,
+                                                    shrinkWrap: true,
+                                                    itemCount: dbTransactions.length,
+                                                    itemBuilder: (context, index) {
+                                                      return Column(
+                                                          children: [
+                                                            ElevatedButton(
+                                                              style: ElevatedButton
+                                                                  .styleFrom(
+                                                                primary: entryList[index]
+                                                                    .value["TransactionStatus"] ==
+                                                                    "Active"
+                                                                    ? Color(
+                                                                    0xfff8d73a)
+                                                                    : Colors.white,
+                                                                /*minimumSize: Size(MediaQuery.of(context).size.width-20, 70),*/
+                                                              ), onPressed: () {
+                                                              Navigator.pushNamed(context, '/transactionDetails', arguments: {
+                                                                    'transactionNumber': entryList[index].key
+                                                                  });
+                                                            },
+                                                              child: Column(
                                                                 children: [
-                                                                  Text(entryList[index].value["ParkingLocationName"], style: const TextStyle(
-                                                                      color:Color(0xff252626),
-                                                                      fontWeight: FontWeight.bold,
-                                                                      fontSize: 20
+                                                                  SizedBox(
+                                                                    height: 10,),
+                                                                  Row(
+                                                                    children: [
+                                                                      Text(
+                                                                        entryList[index]
+                                                                            .value["ParkingLocationName"],
+                                                                        style: const TextStyle(
+                                                                            color: Color(
+                                                                                0xff252626),
+                                                                            fontWeight: FontWeight
+                                                                                .bold,
+                                                                            fontSize: 20
+                                                                        ),
+                                                                      ),
+                                                                    ],
                                                                   ),
+                                                                  Row(
+                                                                    children: [
+                                                                      Text(
+                                                                        entryList[index]
+                                                                            .value["Date"],
+                                                                        style: const TextStyle(
+                                                                            color: Color(
+                                                                                0xff252626),
+                                                                            fontSize: 12
+                                                                        ),),
+                                                                    ],
                                                                   ),
+                                                                  Row(
+                                                                    children: [
+                                                                      Text(
+                                                                        entryList[index]
+                                                                            .value["Time"],
+                                                                        style: TextStyle(
+                                                                            color: Color(
+                                                                                0xff252626),
+                                                                            fontSize: 12
+                                                                        ),),
+                                                                    ],
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    height: 10,)
                                                                 ],
                                                               ),
-                                                              Row(
-                                                                children: [
-                                                                  Text(entryList[index].value["Date"], style: const TextStyle(
-                                                                      color:Color(0xff252626),
-                                                                      fontSize: 12
-                                                                  ),),
-                                                                ],
-                                                              ),
-                                                              Row(
-                                                                children: [
-                                                                  Text(entryList[index].value["Time"], style: TextStyle(
-                                                                      color: Color(0xff252626),
-                                                                      fontSize: 12
-                                                                  ),),
-                                                                ],
-                                                              ),
-                                                              const SizedBox(height: 10,)
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        const SizedBox(height: 10,)
-                                                      ]
-                                                  );
-                                                });
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 10,)
+                                                          ]
+                                                      );
+                                                    });
+                                              }else{
+                                                return Text("");
+                                              }
+                                            }
+                                          }else{
+                                            return Text("");
                                           }
                                         }
                                     ),

@@ -11,6 +11,8 @@ import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:e_wan/homePage.dart';
 
+import 'ParkingAreas/parkingArea1.dart';
+
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -25,6 +27,7 @@ class homeScreen extends StatelessWidget {
       create: (context) => GoogleSignInProvider(),
       child: MaterialApp(
         title: title,
+
         debugShowCheckedModeBanner: false,
         theme: ThemeData(
           fontFamily: 'Metropolis',
@@ -36,6 +39,7 @@ class homeScreen extends StatelessWidget {
           '/homePageController': (context) => homePageController(),
           '/homePage': (context) => homePage(),
           '/transactionDetails' : (context) => transactionDetails(),
+          '/parkingSlot' : (context) => parkingSlot(),
         },
       )
   );

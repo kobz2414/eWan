@@ -231,6 +231,8 @@ class _homePageState extends State<startPage> {
                                     ],
                                   ),
                                   const SizedBox(height: 20,),
+
+                                  //Transactions
                                   Column(
                                       children: [
                                   SizedBox(
@@ -238,70 +240,104 @@ class _homePageState extends State<startPage> {
                                     child: StreamBuilder(
                                         stream: dbData,
                                         builder: (context, snapshot) {
-                                          if (snapshot.connectionState == ConnectionState.waiting) {
-                                            return const Center(
-                                              child: CircularProgressIndicator(),
-                                            );
-                                          } else if (snapshot.hasError) {
-                                            return const Text("Something went wrong");
-                                          }else {
-                                            data = (snapshot.data! as Event).snapshot.value;
-                                            var entryList = data.entries.toList();
+                                          if(snapshot.hasData){
+                                            if (snapshot.connectionState == ConnectionState.waiting) {
+                                              return const Center(
+                                                child: CircularProgressIndicator(),
+                                              );
+                                            } else if (snapshot.hasError) {
+                                              return const Text("Something went wrong");
+                                            }else{
+                                              data = (snapshot.data! as Event).snapshot.value;
 
-                                            return ListView.builder(
-                                                scrollDirection: Axis.vertical,
-                                                shrinkWrap: true,
-                                                itemCount: data.length,
-                                                itemBuilder: (context, index){
+                                              if(data != null){
+                                                var entryList = data.entries.toList();
 
-                                                  return Column(
-                                                      children: [
-                                                        ElevatedButton(
-                                                          style: ElevatedButton.styleFrom(
-                                                            primary: entryList[index].value["TransactionStatus"] == "Active" ? Color(0xfff8d73a) : Colors.white,
-                                                            /*minimumSize: Size(MediaQuery.of(context).size.width-20, 70),*/
-                                                          ),onPressed: (){
-                                                            Navigator.pushNamed(context, '/transactionDetails', arguments: {
-                                                              'transactionNumber': entryList[index].key
-                                                            });
-                                                        },
-                                                          child: Column(
-                                                            children: [
-                                                              SizedBox(height: 10,),
-                                                              Row(
+                                                return ListView.builder(
+                                                    scrollDirection: Axis.vertical,
+                                                    shrinkWrap: true,
+                                                    itemCount: data.length,
+                                                    itemBuilder: (context, index) {
+                                                      return Column(
+                                                          children: [
+                                                            ElevatedButton(
+                                                              style: ElevatedButton
+                                                                  .styleFrom(
+                                                                primary: entryList[index]
+                                                                    .value["TransactionStatus"] ==
+                                                                    "Active"
+                                                                    ? Color(
+                                                                    0xfff8d73a)
+                                                                    : Colors.white,
+                                                                /*minimumSize: Size(MediaQuery.of(context).size.width-20, 70),*/
+                                                              ), onPressed: () {
+                                                              Navigator.pushNamed(
+                                                                  context,
+                                                                  '/transactionDetails',
+                                                                  arguments: {
+                                                                    'transactionNumber': entryList[index]
+                                                                        .key
+                                                                  });
+                                                            },
+                                                              child: Column(
                                                                 children: [
-                                                                  Text(entryList[index].value["ParkingLocationName"], style: const TextStyle(
-                                                                      color:Color(0xff252626),
-                                                                      fontWeight: FontWeight.bold,
-                                                                      fontSize: 20
+                                                                  SizedBox(
+                                                                    height: 10,),
+                                                                  Row(
+                                                                    children: [
+                                                                      Text(
+                                                                        entryList[index]
+                                                                            .value["ParkingLocationName"],
+                                                                        style: const TextStyle(
+                                                                            color: Color(
+                                                                                0xff252626),
+                                                                            fontWeight: FontWeight
+                                                                                .bold,
+                                                                            fontSize: 20
+                                                                        ),
+                                                                      ),
+                                                                    ],
                                                                   ),
+                                                                  Row(
+                                                                    children: [
+                                                                      Text(
+                                                                        entryList[index]
+                                                                            .value["Date"],
+                                                                        style: const TextStyle(
+                                                                            color: Color(
+                                                                                0xff252626),
+                                                                            fontSize: 12
+                                                                        ),),
+                                                                    ],
                                                                   ),
+                                                                  Row(
+                                                                    children: [
+                                                                      Text(
+                                                                        entryList[index]
+                                                                            .value["Time"],
+                                                                        style: TextStyle(
+                                                                            color: Color(
+                                                                                0xff252626),
+                                                                            fontSize: 12
+                                                                        ),),
+                                                                    ],
+                                                                  ),
+                                                                  const SizedBox(
+                                                                    height: 10,)
                                                                 ],
                                                               ),
-                                                              Row(
-                                                                children: [
-                                                                  Text(entryList[index].value["Date"], style: const TextStyle(
-                                                                      color:Color(0xff252626),
-                                                                      fontSize: 12
-                                                                  ),),
-                                                                ],
-                                                              ),
-                                                              Row(
-                                                                children: [
-                                                                  Text(entryList[index].value["Time"], style: TextStyle(
-                                                                      color: Color(0xff252626),
-                                                                      fontSize: 12
-                                                                  ),),
-                                                                ],
-                                                              ),
-                                                              const SizedBox(height: 10,)
-                                                            ],
-                                                          ),
-                                                        ),
-                                                        const SizedBox(height: 10,)
-                                                      ]
-                                                  );
-                                                });
+                                                            ),
+                                                            const SizedBox(
+                                                              height: 10,)
+                                                          ]
+                                                      );
+                                                    });
+                                              }else{
+                                                return Text("");
+                                              }
+                                            }
+                                          }else{
+                                            return Text("");
                                           }
                                         }
                                     ),

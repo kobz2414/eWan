@@ -3,6 +3,8 @@ import 'package:e_wan/startPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
+import 'location_tracking.dart';
+
 class homePageController extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Scaffold(
