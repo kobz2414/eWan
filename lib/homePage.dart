@@ -439,7 +439,7 @@ class _homePageState extends State<homePage> {
                                 children: [
                                   Container(
                                     width: MediaQuery.of(context).size.width - 80,
-                                    /*height: MediaQuery.of(context).size.height - 420,*/
+                                    height: MediaQuery.of(context).orientation == Orientation.portrait ? MediaQuery.of(context).size.height - 450 : MediaQuery.of(context).size.height - 100,
                                     child: StreamBuilder(
                                         stream: databaseTransactions.child("UserData").child(user.uid).child("Transactions").onValue,
                                         builder: (context, snapshot) {

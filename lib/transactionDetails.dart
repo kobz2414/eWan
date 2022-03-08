@@ -175,7 +175,7 @@ class _transactionDetailsState extends State<transactionDetails> {
                               ),
                               Row(
                                 children: [
-                                  Text(data[args["transactionNumber"]]["TransactionStatus"], style: const TextStyle(
+                                  Text(data[args["transactionNumber"]]["RequestStatus"], style: const TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 20

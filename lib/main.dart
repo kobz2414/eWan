@@ -1,7 +1,9 @@
 import 'package:e_wan/GoogleFiles/google_sign_in.dart';
 import 'package:e_wan/homePageController.dart';
 import 'package:e_wan/parkingLocation.dart';
+import 'package:e_wan/parkingReservation.dart';
 import 'package:e_wan/parkingSlot.dart';
+import 'package:e_wan/showParkingSlotDetails.dart';
 import 'package:e_wan/startPage.dart';
 import 'package:e_wan/transactionDetails.dart';
 import 'package:flutter/material.dart';
@@ -40,6 +42,8 @@ class homeScreen extends StatelessWidget {
           '/homePage': (context) => homePage(),
           '/transactionDetails' : (context) => transactionDetails(),
           '/parkingSlot' : (context) => parkingSlot(),
+          '/showParkingSlotDetails'  : (context) => showParkingSlotDetails(),
+          '/parkingReservation' : (context) => parkingReservation(),
         },
       )
   );

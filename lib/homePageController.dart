@@ -1,3 +1,5 @@
+import 'package:e_wan/parkingReservation.dart';
+import 'package:e_wan/showParkingSlotDetails.dart';
 import 'package:e_wan/signIn.dart';
 import 'package:e_wan/startPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';

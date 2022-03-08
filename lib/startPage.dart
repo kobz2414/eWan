@@ -235,112 +235,113 @@ class _homePageState extends State<startPage> {
                                   //Transactions
                                   Column(
                                       children: [
-                                  SizedBox(
-                                    width: MediaQuery.of(context).size.width - 80,
-                                    child: StreamBuilder(
-                                        stream: dbData,
-                                        builder: (context, snapshot) {
-                                          if(snapshot.hasData){
-                                            if (snapshot.connectionState == ConnectionState.waiting) {
-                                              return const Center(
-                                                child: CircularProgressIndicator(),
-                                              );
-                                            } else if (snapshot.hasError) {
-                                              return const Text("Something went wrong");
-                                            }else{
-                                              data = (snapshot.data! as Event).snapshot.value;
+                                        SizedBox(
+                                          width: MediaQuery.of(context).size.width - 80,
+                                          height: MediaQuery.of(context).orientation == Orientation.portrait ? MediaQuery.of(context).size.height - 380 : MediaQuery.of(context).size.height - 30,
+                                          child: StreamBuilder(
+                                              stream: dbData,
+                                              builder: (context, snapshot) {
+                                                if(snapshot.hasData){
+                                                  if (snapshot.connectionState == ConnectionState.waiting) {
+                                                    return const Center(
+                                                      child: CircularProgressIndicator(),
+                                                    );
+                                                  } else if (snapshot.hasError) {
+                                                    return const Text("Something went wrong");
+                                                  }else{
+                                                    data = (snapshot.data! as Event).snapshot.value;
 
-                                              if(data != null){
-                                                var entryList = data.entries.toList();
+                                                    if(data != null){
+                                                      var entryList = data.entries.toList();
 
-                                                return ListView.builder(
-                                                    scrollDirection: Axis.vertical,
-                                                    shrinkWrap: true,
-                                                    itemCount: data.length,
-                                                    itemBuilder: (context, index) {
-                                                      return Column(
-                                                          children: [
-                                                            ElevatedButton(
-                                                              style: ElevatedButton
-                                                                  .styleFrom(
-                                                                primary: entryList[index]
-                                                                    .value["TransactionStatus"] ==
-                                                                    "Active"
-                                                                    ? Color(
-                                                                    0xfff8d73a)
-                                                                    : Colors.white,
-                                                                /*minimumSize: Size(MediaQuery.of(context).size.width-20, 70),*/
-                                                              ), onPressed: () {
-                                                              Navigator.pushNamed(
-                                                                  context,
-                                                                  '/transactionDetails',
-                                                                  arguments: {
-                                                                    'transactionNumber': entryList[index]
-                                                                        .key
-                                                                  });
-                                                            },
-                                                              child: Column(
+                                                      return ListView.builder(
+                                                          scrollDirection: Axis.vertical,
+                                                          shrinkWrap: true,
+                                                          itemCount: data.length,
+                                                          itemBuilder: (context, index) {
+                                                            return Column(
                                                                 children: [
-                                                                  SizedBox(
-                                                                    height: 10,),
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                        entryList[index]
-                                                                            .value["ParkingLocationName"],
-                                                                        style: const TextStyle(
-                                                                            color: Color(
-                                                                                0xff252626),
-                                                                            fontWeight: FontWeight
-                                                                                .bold,
-                                                                            fontSize: 20
+                                                                  ElevatedButton(
+                                                                    style: ElevatedButton
+                                                                        .styleFrom(
+                                                                      primary: entryList[index]
+                                                                          .value["TransactionStatus"] ==
+                                                                          "Active"
+                                                                          ? Color(
+                                                                          0xfff8d73a)
+                                                                          : Colors.white,
+                                                                      /*minimumSize: Size(MediaQuery.of(context).size.width-20, 70),*/
+                                                                    ), onPressed: () {
+                                                                    Navigator.pushNamed(
+                                                                        context,
+                                                                        '/transactionDetails',
+                                                                        arguments: {
+                                                                          'transactionNumber': entryList[index]
+                                                                              .key
+                                                                        });
+                                                                  },
+                                                                    child: Column(
+                                                                      children: [
+                                                                        SizedBox(
+                                                                          height: 10,),
+                                                                        Row(
+                                                                          children: [
+                                                                            Text(
+                                                                              entryList[index]
+                                                                                  .value["ParkingLocationName"],
+                                                                              style: const TextStyle(
+                                                                                  color: Color(
+                                                                                      0xff252626),
+                                                                                  fontWeight: FontWeight
+                                                                                      .bold,
+                                                                                  fontSize: 20
+                                                                              ),
+                                                                            ),
+                                                                          ],
                                                                         ),
-                                                                      ),
-                                                                    ],
-                                                                  ),
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                        entryList[index]
-                                                                            .value["Date"],
-                                                                        style: const TextStyle(
-                                                                            color: Color(
-                                                                                0xff252626),
-                                                                            fontSize: 12
-                                                                        ),),
-                                                                    ],
-                                                                  ),
-                                                                  Row(
-                                                                    children: [
-                                                                      Text(
-                                                                        entryList[index]
-                                                                            .value["Time"],
-                                                                        style: TextStyle(
-                                                                            color: Color(
-                                                                                0xff252626),
-                                                                            fontSize: 12
-                                                                        ),),
-                                                                    ],
+                                                                        Row(
+                                                                          children: [
+                                                                            Text(
+                                                                              entryList[index]
+                                                                                  .value["Date"],
+                                                                              style: const TextStyle(
+                                                                                  color: Color(
+                                                                                      0xff252626),
+                                                                                  fontSize: 12
+                                                                              ),),
+                                                                          ],
+                                                                        ),
+                                                                        Row(
+                                                                          children: [
+                                                                            Text(
+                                                                              entryList[index]
+                                                                                  .value["Time"],
+                                                                              style: TextStyle(
+                                                                                  color: Color(
+                                                                                      0xff252626),
+                                                                                  fontSize: 12
+                                                                              ),),
+                                                                          ],
+                                                                        ),
+                                                                        const SizedBox(
+                                                                          height: 10,)
+                                                                      ],
+                                                                    ),
                                                                   ),
                                                                   const SizedBox(
                                                                     height: 10,)
-                                                                ],
-                                                              ),
-                                                            ),
-                                                            const SizedBox(
-                                                              height: 10,)
-                                                          ]
-                                                      );
-                                                    });
-                                              }else{
-                                                return Text("");
+                                                                ]
+                                                            );
+                                                          });
+                                                    }else{
+                                                      return Text("");
+                                                    }
+                                                  }
+                                                }else{
+                                                  return Text("");
+                                                }
                                               }
-                                            }
-                                          }else{
-                                            return Text("");
-                                          }
-                                        }
-                                    ),
+                                          ),
                                         )
                                       ]
                                   )
