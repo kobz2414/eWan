@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 
 class parkingReservation extends StatefulWidget {
@@ -11,22 +12,20 @@ class parkingReservation extends StatefulWidget {
 }
 
 class _parkingReservationState extends State<parkingReservation> {
-  TextEditingController name = TextEditingController();
-  TextEditingController userEmail = TextEditingController();
   TextEditingController mobileNumber = TextEditingController();
   TextEditingController plateNumber = TextEditingController();
 
   final user = FirebaseAuth.instance.currentUser!;
   final databaseParking = FirebaseDatabase.instance.reference();
   var dbData;
+  var parkingDetailsData;
+  String parkingPrice = "", rentDuration = "", rentFrom = "", rentTo = "";
 
   Map args = {};
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    name.dispose();
-    userEmail.dispose();
     mobileNumber.dispose();
     plateNumber.dispose();
     super.dispose();
@@ -71,32 +70,200 @@ class _parkingReservationState extends State<parkingReservation> {
                           ),),
                         ],
                       ),
-                      //TRANSACTION ID
+
+                      // NAME
                       const SizedBox(
                         height: 40,
                       ),
-                      TextField(
-                        controller: name,
-                        enabled: false,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: user.displayName,
-                        ),
+                      Row(
+                        children: const [
+                          Text('Name', style: TextStyle(
+                              color: Color(0xff5d6974),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12
+                          ),
+                          )
+                        ],
                       ),
+                      Row(
+                        children: [
+                          Text(user.displayName.toString(), style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16
+                          ),
+                          )
+                        ],
+                      ),
+
+                      // EMAIL
                       const SizedBox(
-                        height: 5,
+                        height: 15,
                       ),
-                      TextField(
-                        controller: userEmail,
-                        enabled: false,
-                        decoration: InputDecoration(
-                          border: OutlineInputBorder(),
-                          labelText: user.email,
-                        ),
+                      Row(
+                        children: const [
+                          Text('Email', style: TextStyle(
+                              color: Color(0xff5d6974),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12
+                          ),
+                          )
+                        ],
                       ),
+                      Row(
+                        children: [
+                          Text(user.email.toString(), style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16
+                          ),
+                          )
+                        ],
+                      ),
+
                       const SizedBox(
-                        height: 5,
+                        height: 15,
                       ),
+                      //PARKING LOCATION
+                      Row(
+                        children: const [
+                          Text('Parking Location', style: TextStyle(
+                              color: Color(0xff5d6974),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12
+                          ),
+                          )
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(args["parkingLocationID"], style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16
+                          ),
+                          )
+                        ],
+                      ),
+
+                      const SizedBox(
+                        height: 15,
+                      ),
+                      //PARKING SLOT
+                      Row(
+                        children: const [
+                          Text('Parking Slot', style: TextStyle(
+                              color: Color(0xff5d6974),
+                              fontWeight: FontWeight.bold,
+                              fontSize: 12
+                          ),
+                          )
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Text(args["parkingSlotID"], style: const TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.w600,
+                              fontSize: 16
+                          ),
+                          )
+                        ],
+                      ),
+
+                      const SizedBox(
+                        height: 15,
+                      ),
+
+                      StreamBuilder(
+                          stream: databaseParking.child("ParkingLocation").child(args["parkingLocationID"]).onValue,
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState == ConnectionState.waiting) {
+                              return const Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            } else if (snapshot.hasError) {
+                              return const Text("Something went wrong");
+                            } else {
+                              parkingDetailsData = (snapshot.data! as Event).snapshot.value;
+
+                              rentTo = parkingDetailsData["RentTimeToFormatted"];
+                              rentFrom = parkingDetailsData["RentTimeFromFormatted"];
+
+                              DateTime dt1 = DateTime.parse(rentTo);
+                              DateTime dt2 = DateTime.parse(rentFrom);
+
+                              Duration diff = dt1.difference(dt2);
+                              parkingPrice =  (int.parse(parkingDetailsData["RentPrice"]) * int.parse(diff.inHours.toString())).toString();
+                              rentDuration = parkingDetailsData["RentTimeFrom"]  + " - " + parkingDetailsData["RentTimeTo"];
+
+                              return Column(
+                                children: [
+                                  Row(
+                                    children: const [
+                                      Text("Parking Date and Time", style: TextStyle(
+                                          color: Color(0xff5d6974),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12
+                                      ),
+                                      )
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(parkingDetailsData["RentTimeFrom"]  + " - ", style: const TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 16
+                                      ),
+                                      )
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(parkingDetailsData["RentTimeTo"], style: const TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 16
+                                      ),
+                                      )
+                                    ],
+                                  ),
+
+                                  const SizedBox(
+                                    height: 15,
+                                  ),
+
+                                  Row(
+                                    children: const [
+                                      Text("Total Fee", style: TextStyle(
+                                          color: Color(0xff5d6974),
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 12
+                                      ),
+                                      )
+                                    ],
+                                  ),
+                                  Row(
+                                    children: [
+                                      Text(parkingPrice, style: const TextStyle(
+                                          color: Colors.black,
+                                          fontWeight: FontWeight.w600,
+                                          fontSize: 16
+                                      ),
+                                      )
+                                    ],
+                                  ),
+                                ],
+                              );
+                            }
+                          }
+                      ),
+
+                      const SizedBox(
+                        height: 20,
+                      ),
+
                       TextField(
                         controller: mobileNumber,
                         decoration: InputDecoration(
@@ -104,6 +271,10 @@ class _parkingReservationState extends State<parkingReservation> {
                           labelText: 'Mobile Number',
                           hintText: 'Enter Mobile Number',
                         ),
+                        keyboardType: TextInputType.number,
+                        inputFormatters: <TextInputFormatter>[
+                          FilteringTextInputFormatter.digitsOnly
+                        ],
                       ),
                       const SizedBox(
                         height: 5,
@@ -139,7 +310,7 @@ class _parkingReservationState extends State<parkingReservation> {
                                       mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         ElevatedButton(
-                                            onPressed: dbData["ArduinoStatus"] == "Not Available" || dbData["ArduinoStatus"] == "Occupied" ? null : (){
+                                            onPressed: dbData["ArduinoStatus"] == "Not Available" || dbData["ArduinoStatus"] == "Occupied" || mobileNumber.text == "" || plateNumber.text == "" ? null : (){
                                               Navigator.pushReplacementNamed(context, '/parkingSlot', arguments: {
                                                 'parkingLocationID': args["parkingLocationID"]
                                               });
@@ -224,11 +395,32 @@ class _parkingReservationState extends State<parkingReservation> {
       "ParkingSlotID": args["parkingSlotID"],
       "Time": currTime,
       "TransactionStatus": "Active",
-      "TransactionType": args["parkingType"],
       "Name": user.displayName,
       "Email": user.email,
       "MobileNumber": mobileNumber,
-      "PlateNumber": plateNumber
+      "PlateNumber": plateNumber,
+      "TotalCost": parkingPrice,
+      "RentDuration": rentDuration,
+      "RentTimeFromFormatted": rentFrom,
+      "RentTimeToFormatted": rentTo
+    });
+
+    databaseParking.child("Transactions").child(args["parkingLocationID"]).child(transactionNumber).set({
+      "userID": user.uid,
+      "RequestStatus": "Pending",
+      "ParkingLocationName": args["parkingLocationID"],
+      "ParkingSlotID": args["parkingSlotID"],
+      "Date": currDate,
+      "Time": currTime,
+      "TransactionStatus": "Active",
+      "Name": user.displayName,
+      "Email": user.email,
+      "MobileNumber": mobileNumber,
+      "PlateNumber": plateNumber,
+      "TotalCost": parkingPrice,
+      "RentDuration": rentDuration,
+      "RentTimeFromFormatted": rentFrom,
+      "RentTimeToFormatted": rentTo
     });
   }
 }

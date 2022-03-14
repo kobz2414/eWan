@@ -294,7 +294,7 @@ class _homePageState extends State<startPage> {
                                                                                       0xff252626),
                                                                                   fontWeight: FontWeight
                                                                                       .bold,
-                                                                                  fontSize: 20
+                                                                                  fontSize: 18
                                                                               ),
                                                                             ),
                                                                           ],

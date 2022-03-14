@@ -1,4 +1,3 @@
-import 'package:e_wan/parkingSlot.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
@@ -105,17 +104,16 @@ class _showParkingSlotDetailsState extends State<showParkingSlotDetails> {
                           ),
                           ),
                           const SizedBox(height: 30,),
-                          args["parkingType"] == "PAID" ?
+                          args["parkingType"] == "Paid" ?
                             Container(
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 ElevatedButton(
-                                    onPressed: dbData["ArduinoStatus"] == "Not Available" || dbData["ArduinoStatus"] == "Occupied" ? null : (){
+                                    onPressed: dbData["ArduinoStatus"] == "Not Available" || dbData["ArduinoStatus"] == "Occupied" || dbData["ArduinoStatus"] == "Reserved" ? null : (){
                                       Navigator.pushReplacementNamed(context, '/parkingReservation', arguments: {
                                         'parkingSlotID': args["parkingSlotID"],
                                         'parkingLocationID': args["parkingLocationID"],
-                                        'parkingType': args["parkingType"]
                                       });
                                       ;
                                     },
@@ -140,7 +138,7 @@ class _showParkingSlotDetailsState extends State<showParkingSlotDetails> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 ElevatedButton(
-                                    onPressed: dbData["ArduinoStatus"] == "Not Available" ? null : (){
+                                    onPressed: dbData["ArduinoStatus"] == "Not Available" || dbData["ArduinoStatus"] == "Occupied" || dbData["ArduinoStatus"] == "Reserved" ? null : (){
                                         Navigator.pop(context);
                                     },
                                     child: const Text("DIRECTIONS", style: TextStyle(

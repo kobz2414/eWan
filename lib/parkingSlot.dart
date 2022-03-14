@@ -329,6 +329,31 @@ class _parkingSlotState extends State<parkingSlot> {
                                               children: [
                                                 Container(
                                                   decoration: const BoxDecoration(
+                                                      color: Color(0xffFDB827),
+                                                      borderRadius: BorderRadius.all(Radius.circular(20))
+                                                  ),
+                                                  height: 10,
+                                                  width: 10,
+                                                ),
+                                                const SizedBox(width: 3),
+                                                const Text("RESERVED", style: TextStyle(
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 8,
+                                                  color: Colors.white,
+                                                ),
+                                                )
+                                              ],
+                                            )
+                                          ],
+                                        ),
+                                        const SizedBox(width: 12,),
+                                        Column(
+                                          children: [
+                                            const SizedBox(height: 3),
+                                            Row(
+                                              children: [
+                                                Container(
+                                                  decoration: const BoxDecoration(
                                                       color: Color(0xff5d6974),
                                                       borderRadius: BorderRadius.all(Radius.circular(20))
                                                   ),
@@ -555,7 +580,8 @@ class _parkingSlotState extends State<parkingSlot> {
                                                         style: ElevatedButton.styleFrom(
                                                           primary: dbData2["Ateneo de Davao University 6"]["ArduinoStatus"] == "Vacant" ?
                                                           Color(0xfff6fbff) : dbData2["Ateneo de Davao University 6"]["ArduinoStatus"] == "Occupied" ?
-                                                          Color(0xfff8d73a) : Color(0xff5d6974),
+                                                          Color(0xfff8d73a) : dbData2["Ateneo de Davao University 6"]["ArduinoStatus"] == "Reserved" ?
+                                                          Color(0xffFDB827) : Color(0xff5d6974),
                                                           onPrimary: const Color(0xff5d6974),
                                                           shape: RoundedRectangleBorder(
                                                               borderRadius: BorderRadius.circular(3)

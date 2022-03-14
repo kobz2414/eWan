@@ -4,6 +4,7 @@ import 'package:e_wan/signIn.dart';
 import 'package:e_wan/startPage.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 
 import 'location_tracking.dart';
 

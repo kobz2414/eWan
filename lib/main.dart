@@ -3,6 +3,7 @@ import 'package:e_wan/homePageController.dart';
 import 'package:e_wan/parkingLocation.dart';
 import 'package:e_wan/parkingReservation.dart';
 import 'package:e_wan/parkingSlot.dart';
+import 'package:e_wan/paymentDetails.dart';
 import 'package:e_wan/showParkingSlotDetails.dart';
 import 'package:e_wan/startPage.dart';
 import 'package:e_wan/transactionDetails.dart';
@@ -12,8 +13,6 @@ import 'package:e_wan/signIn.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:e_wan/homePage.dart';
-
-import 'ParkingAreas/parkingArea1.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,6 +43,7 @@ class homeScreen extends StatelessWidget {
           '/parkingSlot' : (context) => parkingSlot(),
           '/showParkingSlotDetails'  : (context) => showParkingSlotDetails(),
           '/parkingReservation' : (context) => parkingReservation(),
+          '/paymentDetails' : (context) => paymentDetails(),
         },
       )
   );
