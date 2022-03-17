@@ -1,9 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:intl/intl.dart';
 
 class transactionDetails extends StatefulWidget {
   const transactionDetails({Key? key}) : super(key: key);
@@ -201,7 +199,17 @@ class _transactionDetailsState extends State<transactionDetails> {
                               ),
                               Row(
                                 children: [
-                                  Text(data["RentDuration"], style: const TextStyle(
+                                  Text(data["RentTimeFrom"] + " - ", style: const TextStyle(
+                                      color: Colors.black,
+                                      fontWeight: FontWeight.w600,
+                                      fontSize: 16
+                                  ),
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text(data["RentTimeTo"], style: const TextStyle(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w600,
                                       fontSize: 16

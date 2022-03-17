@@ -19,7 +19,7 @@ class _parkingReservationState extends State<parkingReservation> {
   final databaseParking = FirebaseDatabase.instance.reference();
   var dbData;
   var parkingDetailsData;
-  String parkingPrice = "", rentDuration = "", rentFrom = "", rentTo = "";
+  String parkingPrice = "", rentDurationFrom = "", rentDurationTo = "",rentFrom = "", rentTo = "";
 
   Map args = {};
 
@@ -195,7 +195,8 @@ class _parkingReservationState extends State<parkingReservation> {
 
                               Duration diff = dt1.difference(dt2);
                               parkingPrice =  (int.parse(parkingDetailsData["RentPrice"]) * int.parse(diff.inHours.toString())).toString();
-                              rentDuration = parkingDetailsData["RentTimeFrom"]  + " - " + parkingDetailsData["RentTimeTo"];
+                              rentDurationFrom = parkingDetailsData["RentTimeFrom"];
+                              rentDurationTo = parkingDetailsData["RentTimeTo"];
 
                               return Column(
                                 children: [
@@ -400,7 +401,8 @@ class _parkingReservationState extends State<parkingReservation> {
       "MobileNumber": mobileNumber,
       "PlateNumber": plateNumber,
       "TotalCost": parkingPrice,
-      "RentDuration": rentDuration,
+      "RentTimeFrom": rentDurationFrom,
+      "RentTimeTo": rentDurationTo,
       "RentTimeFromFormatted": rentFrom,
       "RentTimeToFormatted": rentTo
     });
@@ -418,7 +420,8 @@ class _parkingReservationState extends State<parkingReservation> {
       "MobileNumber": mobileNumber,
       "PlateNumber": plateNumber,
       "TotalCost": parkingPrice,
-      "RentDuration": rentDuration,
+      "RentTimeFrom": rentDurationFrom,
+      "RentTimeTo": rentDurationTo,
       "RentTimeFromFormatted": rentFrom,
       "RentTimeToFormatted": rentTo
     });
