@@ -237,7 +237,7 @@ class _parkingReservationState extends State<parkingReservation> {
 
                                   Row(
                                     children: const [
-                                      Text("Total Fee", style: TextStyle(
+                                      Text("Total Fee (Hourly rate)", style: TextStyle(
                                           color: Color(0xff5d6974),
                                           fontWeight: FontWeight.bold,
                                           fontSize: 12
@@ -267,7 +267,7 @@ class _parkingReservationState extends State<parkingReservation> {
 
                       TextField(
                         controller: mobileNumber,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Mobile Number',
                           hintText: 'Enter Mobile Number',
@@ -282,7 +282,7 @@ class _parkingReservationState extends State<parkingReservation> {
                       ),
                       TextField(
                         controller: plateNumber,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           border: OutlineInputBorder(),
                           labelText: 'Plate Number',
                           hintText: 'Enter Plate Number',

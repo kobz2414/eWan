@@ -15,7 +15,10 @@ class LocationTracking extends StatefulWidget {
 }
 
 class _LocationTrackingState extends State<LocationTracking> {
-  LatLng destinationLatlng = LatLng(6.951883, 126.216357);
+
+  Map args = {};
+
+  late LatLng destinationLatlng;
 
   Completer<GoogleMapController> _controller = Completer();
 
@@ -25,11 +28,11 @@ class _LocationTrackingState extends State<LocationTracking> {
   List<LatLng> polylineCoordinates = [];
   late PolylinePoints polylinePoints;
 
-  late StreamSubscription<LocationData> subscription;
-
-  LocationData? currentLocation;
   late LocationData destinationLocation;
+
   late Location location;
+  LocationData? currentLocation;
+  late StreamSubscription<LocationData> subscription;
 
   @override
   void initState() {
@@ -135,6 +138,11 @@ class _LocationTrackingState extends State<LocationTracking> {
 
   @override
   Widget build(BuildContext context) {
+
+    args = ModalRoute.of(context)!.settings.arguments as Map;
+
+    destinationLatlng = LatLng(args["parkingSlotLocationLat"], args["parkingSlotLocationLong"]);
+
     CameraPosition initialCameraPosition = CameraPosition(
       zoom: 18,
       tilt: 0,

@@ -1,23 +1,25 @@
+import 'dart:ui';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-class parkingSlot extends StatefulWidget {
-  const parkingSlot({Key? key}) : super(key: key);
+class parkingSlotOwner extends StatefulWidget {
+  const parkingSlotOwner({Key? key}) : super(key: key);
 
   @override
-  State<parkingSlot> createState() => _parkingSlotState();
+  State<parkingSlotOwner> createState() => _parkingSlotState();
 }
 
-class _parkingSlotState extends State<parkingSlot> {
+class _parkingSlotState extends State<parkingSlotOwner> {
 
   final user = FirebaseAuth.instance.currentUser!;
   final databaseParking = FirebaseDatabase.instance.reference();
 
-  var data;
   var dbData1;
   var dbData2;
+  var data;
   int availableParkingSpaces = 0;
   int totalParkingSpaces = 0;
   Map args = {};
@@ -64,6 +66,7 @@ class _parkingSlotState extends State<parkingSlot> {
 
                             dbData2 = (snapshot2.data! as Event).snapshot.value;
                             var entryList2 = dbData2.entries.toList();
+
 
                             if(dbData2 != null){
                               totalParkingSpaces =  dbData2.length;
@@ -264,6 +267,39 @@ class _parkingSlotState extends State<parkingSlot> {
                                           ],
                                         ),
                                       )
+                                  ),Positioned(
+                                      bottom: 40,
+                                      child: Container(
+                                        width: MediaQuery.of(context).size.width,
+                                        child: Column(
+                                          children: [
+                                            ElevatedButton(
+                                                onPressed: (){
+                                                  Navigator.pushNamed(context, '/addParkingSlotOwner', arguments: {
+                                                    'parkingLocationID': parkingLocationID,
+                                                    'parkingLat': dbData1["parkingLat"],
+                                                    'parkingLong': dbData1["parkingLong"]
+                                                  });
+                                                  //addNewParkingPlace(parkingName.text, args["parkingLocationLat"].toString(), args["parkingLocationLng"].toString() ,numberOfSlots.text);
+                                                  //Navigator.pop(context);
+                                                },
+                                                child: const Text("ADD PARKING SLOTS", style: TextStyle(
+                                                    fontWeight: FontWeight.bold,
+                                                  fontSize: 12
+                                                ),
+                                                ),
+                                                style: ElevatedButton.styleFrom(
+                                                    primary: Colors.white,
+                                                    onPrimary: Colors.black,
+                                                    minimumSize: Size(MediaQuery.of(context).size.width-180, 35),
+                                                    shape: RoundedRectangleBorder(
+                                                        borderRadius: BorderRadius.circular(30.0)
+                                                    )
+                                                )
+                                            ),
+                                          ],
+                                        ),
+                                      )
                                   ),
                                   // Labels Below
                                   Positioned(
@@ -271,6 +307,7 @@ class _parkingSlotState extends State<parkingSlot> {
                                     left: 20,
                                     child:
                                     Row(
+                                      mainAxisAlignment: MainAxisAlignment.center,
                                       children: [
                                         Column(
                                           children: [
@@ -374,146 +411,87 @@ class _parkingSlotState extends State<parkingSlot> {
                                       ],
                                     ),
                                   ),
-                                  //Parking Slot Grp
 
+                                  //Parking Slot Grp
                                   Positioned(
                                       child:
                                       Container(
-                                          margin: const EdgeInsets.only(top: 170, left: 20, right: 20, bottom: 100),
-                                          child: Container(
-                                              height: MediaQuery.of(context).size.height + 100,
-                                              width: MediaQuery.of(context).size.width,
-                                              child: StreamBuilder(
-                                                  stream: databaseParking.child("ParkingSlot").child(parkingLocationID).onValue,
-                                                  builder: (context, snapshot2){
-                                                    if (snapshot2.connectionState == ConnectionState.waiting) {
-                                                      return const Center(
-                                                        child: CircularProgressIndicator(),
-                                                      );
-                                                    } else if (snapshot2.hasError) {
-                                                      return const Text("Something went wrong");
-                                                    }else{
-                                                      data = (snapshot2.data! as Event).snapshot.value;
+                                        margin: const EdgeInsets.only(top: 170, left: 20, right: 20, bottom: 100),
+                                        child: Container(
+                                            height: MediaQuery.of(context).size.height + 100,
+                                            width: MediaQuery.of(context).size.width,
+                                            child: StreamBuilder(
+                                                stream: databaseParking.child("ParkingSlot").child(parkingLocationID).onValue,
+                                                builder: (context, snapshot2){
+                                                  if (snapshot2.connectionState == ConnectionState.waiting) {
+                                                    return const Center(
+                                                      child: CircularProgressIndicator(),
+                                                    );
+                                                  } else if (snapshot2.hasError) {
+                                                    return const Text("Something went wrong");
+                                                  }else{
+                                                    data = (snapshot2.data! as Event).snapshot.value;
 
-                                                      if(data != null){
-                                                        var entryList = data.entries.toList();
-                                                        return ListView.builder(
-                                                            scrollDirection: Axis.vertical,
-                                                            shrinkWrap: true,
-                                                            itemCount: data.length,
-                                                            itemBuilder: (context, index){
-                                                              return Column(
-                                                                  children: [
-                                                                    SizedBox(
-                                                                      width: 40,
-                                                                      height: 25,
-                                                                      child: ElevatedButton(
-                                                                        style: ElevatedButton.styleFrom(
-                                                                          primary: entryList[index].value["ArduinoStatus"] == "Vacant" ?
-                                                                          const Color(0xfff6fbff) : entryList[index].value["ArduinoStatus"] == "Occupied" ?
-                                                                          const Color(0xfff8d73a) : entryList[index].value["ArduinoStatus"] == "Reserved" ?
-                                                                          const Color(0xffFDB827) : const Color(0xff5d6974),
-                                                                          onPrimary: const Color(0xff5d6974),
-                                                                          shape: RoundedRectangleBorder(
-                                                                              borderRadius: BorderRadius.circular(3)
-                                                                          ),
-                                                                        ), onPressed: () {
-                                                                        Navigator.pushNamed(context, '/showParkingSlotDetails', arguments: {
-                                                                          'parkingSlotID': entryList[index].key,
-                                                                          'parkingLocationID': parkingLocationID,
-                                                                          'parkingType': dbData1["ParkingType"]
-                                                                        });
-                                                                      },
-                                                                        child: Column(
-                                                                          children: [
-                                                                            Column(
-                                                                              children: const [
-                                                                                Text("", style: TextStyle(
-                                                                                    color: Colors.black,
-                                                                                    fontWeight: FontWeight.bold,
-                                                                                    fontSize: 10
-                                                                                ),
-                                                                                ),
-                                                                              ],
-                                                                            ),
-                                                                          ],
+                                                    if(data != null){
+                                                      var entryList = data.entries.toList();
+
+                                                      return ListView.builder(
+                                                          scrollDirection: Axis.vertical,
+                                                          shrinkWrap: true,
+                                                          itemCount: data.length,
+                                                          itemBuilder: (context, index){
+                                                            return Column(
+                                                                children: [
+                                                                  SizedBox(
+                                                                    width: 40,
+                                                                    height: 25,
+                                                                    child: ElevatedButton(
+                                                                      style: ElevatedButton.styleFrom(
+                                                                        primary: entryList[index].value["ArduinoStatus"] == "Vacant" ?
+                                                                        const Color(0xfff6fbff) : entryList[index].value["ArduinoStatus"] == "Occupied" ?
+                                                                        const Color(0xfff8d73a) : entryList[index].value["ArduinoStatus"] == "Reserved" ?
+                                                                        const Color(0xffFDB827) : const Color(0xff5d6974),
+                                                                        onPrimary: const Color(0xff5d6974),
+                                                                        shape: RoundedRectangleBorder(
+                                                                            borderRadius: BorderRadius.circular(3)
                                                                         ),
+                                                                      ), onPressed: () {
+                                                                      Navigator.pushNamed(context, '/showParkingSlotDetailsOwner', arguments: {
+                                                                        'parkingSlotID': entryList[index].key,
+                                                                        'parkingLocationID': parkingLocationID,
+                                                                        'parkingType': dbData1["ParkingType"]
+                                                                      });
+                                                                    },
+                                                                      child: Column(
+                                                                        children: [
+                                                                          Column(
+                                                                            children: const [
+                                                                              Text("", style: TextStyle(
+                                                                                  color: Colors.black,
+                                                                                  fontWeight: FontWeight.bold,
+                                                                                  fontSize: 10
+                                                                              ),
+                                                                              ),
+                                                                            ],
+                                                                          ),
+                                                                        ],
                                                                       ),
                                                                     ),
-                                                                    const SizedBox(height: 5,)
-                                                                  ]
-                                                              );
-                                                            });
-                                                      }
-                                                      else{
-                                                        return SizedBox();
-                                                      }
+                                                                  ),
+                                                                  const SizedBox(height: 5,)
+                                                                ]
+                                                            );
+                                                          });
+                                                    }
+                                                    else{
+                                                      return SizedBox();
                                                     }
                                                   }
-                                              )
-                                          )
+                                                }
+                                            )
+                                        )
                                       )
                                   )
-
-
-
-                                  /*Positioned(
-                                      child:
-                                      Container(
-                                        margin: const EdgeInsets.only(top: 170, left: 20, right: 20, bottom: 40),
-                                        child: SingleChildScrollView(
-                                            child: Container(
-                                              height: MediaQuery.of(context).size.height + 100,
-                                              width: MediaQuery.of(context).size.width,
-                                              child:  Stack(
-                                                alignment: Alignment.center,
-                                                children: [
-                                                  //PARKING SLOTS 1-10
-                                                  Positioned(
-                                                    top: 0,
-                                                    child: SizedBox(
-                                                      width: 40,
-                                                      height: 25,
-                                                      child: ElevatedButton(
-                                                        style: ElevatedButton.styleFrom(
-                                                          primary: dbData2["Ateneo de Davao University 1"]["ArduinoStatus"] == "Vacant" ?
-                                                          const Color(0xfff6fbff) : dbData2["Ateneo de Davao University 1"]["ArduinoStatus"] == "Occupied" ?
-                                                          const Color(0xfff8d73a) : dbData2["Ateneo de Davao University 1"]["ArduinoStatus"] == "Reserved" ?
-                                                          const Color(0xffFDB827) : const Color(0xff5d6974),
-                                                          onPrimary: const Color(0xff5d6974),
-                                                          shape: RoundedRectangleBorder(
-                                                              borderRadius: BorderRadius.circular(3)
-                                                          ),
-                                                        ), onPressed: () {
-                                                        Navigator.pushNamed(context, '/showParkingSlotDetails', arguments: {
-                                                          'parkingSlotID': 'Ateneo de Davao University 1',
-                                                          'parkingLocationID': parkingLocationID,
-                                                          'parkingType': dbData1["ParkingType"]
-                                                        });
-                                                      },
-                                                        child: Column(
-                                                          children: [
-                                                            Column(
-                                                              children: const [
-                                                                Text("", style: TextStyle(
-                                                                    color: Colors.black,
-                                                                    fontWeight: FontWeight.bold,
-                                                                    fontSize: 10
-                                                                ),
-                                                                ),
-                                                              ],
-                                                            ),
-                                                          ],
-                                                        ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                ],
-                                              ),
-                                            )
-                                        ),
-                                      )
-                                  )*/
                                 ]
                             );
                           }

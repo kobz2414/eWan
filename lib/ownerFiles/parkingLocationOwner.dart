@@ -1,18 +1,20 @@
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-class parkingLocation extends StatefulWidget {
-  const parkingLocation({Key? key}) : super(key: key);
+class parkingLocationOwner extends StatefulWidget {
+  const parkingLocationOwner({Key? key}) : super(key: key);
 
   @override
   _parkingLocationState createState() => _parkingLocationState();
 }
 
-class _parkingLocationState extends State<parkingLocation> {
+class _parkingLocationState extends State<parkingLocationOwner> {
   Completer<GoogleMapController> _controller = Completer();
   Set<Marker> markers = Set();
+  final user = FirebaseAuth.instance.currentUser!;
   final database = FirebaseDatabase.instance.reference();
   int availableParkingSpaces = 0;
   int totalParkingSpaces = 0;
@@ -32,7 +34,7 @@ class _parkingLocationState extends State<parkingLocation> {
       backgroundColor: Color(0xfff6fbff),
       body: SafeArea(
         child: StreamBuilder(
-          stream: database.child("ParkingLocation").onValue,
+          stream: database.child("userData").child(user.uid).child("ParkingLocation").onValue,
           builder: (context, snapshot){
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(
@@ -53,13 +55,13 @@ class _parkingLocationState extends State<parkingLocation> {
                       title: entryList[x].value["parkingName"],
                       snippet: "Click to view more details" ,
                       onTap: () {
-                        Navigator.pushReplacementNamed(context, '/homePage', arguments: {
+                        Navigator.pushNamed(context, '/homePageOwner', arguments: {
                           'parkingLocationID': entryList[x].value["parkingName"]
                         });
                       }),
                   position: LatLng(entryList[x].value["parkingLat"], entryList[x].value["parkingLong"]),
                   icon: BitmapDescriptor.defaultMarkerWithHue(
-                        BitmapDescriptor.hueViolet,
+                    BitmapDescriptor.hueViolet,
                   ),
                 );
                 markers.add(resultMarker);

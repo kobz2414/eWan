@@ -1,28 +1,22 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:e_wan/GoogleFiles/google_sign_in.dart';
-import 'package:e_wan/homePageController.dart';
-import 'package:e_wan/parkingLocation.dart';
-import 'package:e_wan/signIn.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart';
 
-class homePage extends StatefulWidget {
+class homePageOwner extends StatefulWidget {
 
   @override
-  State<homePage> createState() => _homePageState();
+  State<homePageOwner> createState() => _homePageState();
 
 }
 
-class _homePageState extends State<homePage> {
+class _homePageState extends State<homePageOwner> {
   final user = FirebaseAuth.instance.currentUser!;
   final databaseParking = FirebaseDatabase.instance.reference();
   final databaseTransactions = FirebaseDatabase.instance.reference();
   var dbData;
-  var dbTransactions;
+  var dbRequests;
   Map args = {};
 
   var currDate;
@@ -160,7 +154,7 @@ class _homePageState extends State<homePage> {
                                   ],
                                 ),
                                 onTap: () {
-                                  Navigator.pushReplacementNamed(context, '/parkingLocation');
+                                  Navigator.pushReplacementNamed(context, '/parkingLocationOwner');
                                 },
                               )
                           )
@@ -188,7 +182,6 @@ class _homePageState extends State<homePage> {
                             }
 
                             int occupied = 0;
-                            int vacant = 0;
 
                             for(int x = 0; x < totalParkingSpaces; x++ ){
                               if(entryList[x].value["ArduinoStatus"] != "Vacant" ){
@@ -329,6 +322,7 @@ class _homePageState extends State<homePage> {
                         }
                     ),
                     ),
+                // PARKING MAP
                 Positioned(
                     child: Container(
                       margin: const EdgeInsets.only(top: 240),
@@ -348,7 +342,7 @@ class _homePageState extends State<homePage> {
                                 fontWeight: FontWeight.bold
                             ),),
                             onPressed: (){
-                              Navigator.pushNamed(context, '/parkingSlot', arguments: {
+                              Navigator.pushNamed(context, '/parkingSlotOwner', arguments: {
                                 'parkingLocationID': parkingLocationID
                               });
                             },
@@ -357,22 +351,108 @@ class _homePageState extends State<homePage> {
                       ),
                     ),
                 ),
-                //TRANSACTIONS
+                // PARKING TYPE
+                Positioned(
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 288),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Color(0xff262626),
+                              onPrimary: Colors.white,
+                              minimumSize: Size(MediaQuery.of(context).size.width-43, 40),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0)
+                              )
+                          ),
+                          child: const Text('PARKING TYPE', style: TextStyle(
+                              fontWeight: FontWeight.bold
+                          ),),
+                          onPressed: (){
+                            Navigator.pushNamed(context, '/parkingTypeOwner', arguments: {
+                              'parkingLocationID': parkingLocationID
+                            });
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                // TRANSACTIONS
+                Positioned(
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 336),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Color(0xff262626),
+                              onPrimary: Colors.white,
+                              minimumSize: Size(MediaQuery.of(context).size.width-43, 40),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0)
+                              )
+                          ),
+                          child: const Text('PAYMENT METHOD', style: TextStyle(
+                              fontWeight: FontWeight.bold
+                          ),),
+                          onPressed: (){
+                            Navigator.pushNamed(context, '/paymentMethodOwner');
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                // PAYMENT METHOD
+                Positioned(
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 384),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                              primary: Color(0xff262626),
+                              onPrimary: Colors.white,
+                              minimumSize: Size(MediaQuery.of(context).size.width-43, 40),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(30.0)
+                              )
+                          ),
+                          child: const Text('TRANSACTIONS', style: TextStyle(
+                              fontWeight: FontWeight.bold
+                          ),),
+                          onPressed: (){
+                            Navigator.pushNamed(context, '/transactionsOwner', arguments: {
+                              'parkingLocationID': parkingLocationID
+                            });
+                          },
+                        )
+                      ],
+                    ),
+                  ),
+                ),
+                //REQUESTS
                 Positioned(
                   child: Container(
                     decoration: const BoxDecoration(
                       borderRadius: BorderRadius.all(Radius.circular(20)),
                       color: Color(0xff5d6974),
                     ),
-                    margin: const EdgeInsets.only(top: 330, left: 20, right: 20),
-                    height: 370,
+                    margin: const EdgeInsets.only(top: 442, left: 20, right: 20),
+                    height: 300,
                     child: Padding(
                         padding: const EdgeInsets.only(top: 15, left: 20, right: 15), //apply padding to all four sides
                         child: Column(
                           children: [
+                            const SizedBox(height: 5,),
                             Row(
                               children: const [
-                                Text("TRANSACTIONS", style: TextStyle(
+                                Text("REQUESTS", style: TextStyle(
                                   fontWeight: FontWeight.w900,
                                   letterSpacing: 1,
                                   fontSize: 20,
@@ -380,67 +460,14 @@ class _homePageState extends State<homePage> {
                                 ),)
                               ],
                             ),
-                            Row(
-                              children: [
-                                Column(
-                                  children: [
-                                    const SizedBox(height: 3),
-                                    Row(
-                                      children: [
-                                        Container(
-                                          decoration: const BoxDecoration(
-                                              color: Color(0xfff8d73a),
-                                              borderRadius: BorderRadius.all(Radius.circular(20))
-                                          ),
-                                          height: 10,
-                                          width: 10,
-                                        ),
-                                        const SizedBox(width: 3),
-                                        const Text("ACTIVE", style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 8
-                                        ),
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
-                                const SizedBox(width: 12,),
-                                Column(
-                                  children: [
-                                    const SizedBox(height: 3),
-                                    Row(
-                                      children: [
-                                        Container(
-                                          decoration: const BoxDecoration(
-                                              color: Colors.white,
-                                              borderRadius: BorderRadius.all(Radius.circular(20))
-                                          ),
-                                          height: 10,
-                                          width: 10,
-                                        ),
-                                        const SizedBox(width: 3),
-                                        const Text("PAST", style: TextStyle(
-                                            color: Colors.white,
-                                            fontWeight: FontWeight.bold,
-                                            fontSize: 8
-                                        ),
-                                        )
-                                      ],
-                                    )
-                                  ],
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 20,),
+                            const SizedBox(height: 10,),
                             Column(
                                 children: [
                                   Container(
                                     width: MediaQuery.of(context).size.width - 80,
-                                    height: MediaQuery.of(context).orientation == Orientation.portrait ? MediaQuery.of(context).size.height - 450 : MediaQuery.of(context).size.height - 100,
+                                    height: MediaQuery.of(context).orientation == Orientation.portrait ? MediaQuery.of(context).size.height - 500 : MediaQuery.of(context).size.height - 160,
                                     child: StreamBuilder(
-                                        stream: databaseTransactions.child("UserData").child(user.uid).child("Transactions").onValue,
+                                        stream: databaseTransactions.child("Transactions").child(parkingLocationID).onValue,
                                         builder: (context, snapshot) {
                                           if(snapshot.hasData){
                                             if (snapshot.connectionState == ConnectionState.waiting) {
@@ -450,31 +477,27 @@ class _homePageState extends State<homePage> {
                                             } else if (snapshot.hasError) {
                                               return const Text("Something went wrong");
                                             }else{
-                                              dbTransactions = (snapshot.data! as Event).snapshot.value;
+                                              dbRequests = (snapshot.data! as Event).snapshot.value;
 
-                                              if(dbTransactions != null){
-                                                var entryList = dbTransactions.entries.toList();
+                                              if(dbRequests != null){
+                                                var entryList = dbRequests.entries.toList();
 
                                                 return ListView.builder(
                                                     scrollDirection: Axis.vertical,
                                                     shrinkWrap: true,
-                                                    itemCount: dbTransactions.length,
+                                                    itemCount: dbRequests.length,
                                                     itemBuilder: (context, index) {
-                                                      return Column(
+                                                      return entryList[index].value["RequestStatus"] == "Pending" ? Column(
                                                           children: [
                                                             ElevatedButton(
                                                               style: ElevatedButton
                                                                   .styleFrom(
-                                                                primary: entryList[index]
-                                                                    .value["TransactionStatus"] ==
-                                                                    "Active"
-                                                                    ? Color(
-                                                                    0xfff8d73a)
-                                                                    : Colors.white,
+                                                                primary: Colors.white,
                                                                 /*minimumSize: Size(MediaQuery.of(context).size.width-20, 70),*/
                                                               ), onPressed: () {
-                                                              Navigator.pushNamed(context, '/transactionDetails', arguments: {
-                                                                    'transactionNumber': entryList[index].key
+                                                              Navigator.pushNamed(context, '/requestDetailsOwner', arguments: {
+                                                                    'transactionNumber': entryList[index].key,
+                                                                    'parkingLocationID': parkingLocationID
                                                                   });
                                                             },
                                                               child: Column(
@@ -485,7 +508,7 @@ class _homePageState extends State<homePage> {
                                                                     children: [
                                                                       Text(
                                                                         entryList[index]
-                                                                            .value["ParkingLocationName"],
+                                                                            .value["ParkingSlotID"],
                                                                         style: const TextStyle(
                                                                             color: Color(
                                                                                 0xff252626),
@@ -502,8 +525,7 @@ class _homePageState extends State<homePage> {
                                                                         entryList[index]
                                                                             .value["Date"],
                                                                         style: const TextStyle(
-                                                                            color: Color(
-                                                                                0xff252626),
+                                                                            color: Color(0xff252626),
                                                                             fontSize: 12
                                                                         ),),
                                                                     ],
@@ -513,9 +535,8 @@ class _homePageState extends State<homePage> {
                                                                       Text(
                                                                         entryList[index]
                                                                             .value["Time"],
-                                                                        style: TextStyle(
-                                                                            color: Color(
-                                                                                0xff252626),
+                                                                        style: const TextStyle(
+                                                                            color: Color(0xff252626),
                                                                             fontSize: 12
                                                                         ),),
                                                                     ],
@@ -528,7 +549,7 @@ class _homePageState extends State<homePage> {
                                                             const SizedBox(
                                                               height: 10,)
                                                           ]
-                                                      );
+                                                      ) : const SizedBox();
                                                     });
                                               }else{
                                                 return Text("");

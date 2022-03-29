@@ -22,7 +22,7 @@ class _showParkingSlotDetailsState extends State<showParkingSlotDetails> {
     args = ModalRoute.of(context)!.settings.arguments as Map;
 
     return Scaffold(
-      backgroundColor: Color(0xff262626),
+      backgroundColor: const Color(0xff262626),
       body: SizedBox(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
@@ -30,7 +30,7 @@ class _showParkingSlotDetailsState extends State<showParkingSlotDetails> {
           child: Stack(
             alignment: Alignment.center,
             children: <Widget>[
-              SizedBox(height: 800,),
+              const SizedBox(height: 800,),
               Container(
                 padding: const EdgeInsets.only(
                     top: 50,
@@ -110,7 +110,7 @@ class _showParkingSlotDetailsState extends State<showParkingSlotDetails> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 ElevatedButton(
-                                    onPressed: dbData["ArduinoStatus"] == "Not Available" || dbData["ArduinoStatus"] == "Occupied" || dbData["ArduinoStatus"] == "Reserved" ? null : (){
+                                    onPressed: dbData["ArduinoStatus"] == "Not Available" || dbData["ArduinoStatus"] == "Occupied" || dbData["ArduinoStatus"] == "Reserved" || dbData["ArduinoStatus"] == "Initializing" ? null : (){
                                       Navigator.pushReplacementNamed(context, '/parkingReservation', arguments: {
                                         'parkingSlotID': args["parkingSlotID"],
                                         'parkingLocationID': args["parkingLocationID"],
@@ -138,8 +138,11 @@ class _showParkingSlotDetailsState extends State<showParkingSlotDetails> {
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
                                 ElevatedButton(
-                                    onPressed: dbData["ArduinoStatus"] == "Not Available" || dbData["ArduinoStatus"] == "Occupied" || dbData["ArduinoStatus"] == "Reserved" ? null : (){
-                                        Navigator.pop(context);
+                                    onPressed: dbData["ArduinoStatus"] == "Not Available" || dbData["ArduinoStatus"] == "Occupied" || dbData["ArduinoStatus"] == "Reserved" || dbData["ArduinoStatus"] == "Initializing" ? null : (){
+                                      Navigator.pushReplacementNamed(context, '/googleMapsDirections', arguments: {
+                                        'parkingSlotLocationLat': dbData["ParkingSlotLocationLat"],
+                                        'parkingSlotLocationLong': dbData["ParkingSlotLocationLong"],
+                                      });
                                     },
                                     child: const Text("DIRECTIONS", style: TextStyle(
                                         fontWeight: FontWeight.bold

@@ -9,10 +9,25 @@ import 'package:e_wan/startPage.dart';
 import 'package:e_wan/transactionDetails.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
-import 'package:e_wan/signIn.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:provider/provider.dart';
 import 'package:e_wan/homePage.dart';
+
+import 'location_tracking.dart';
+import 'ownerFiles/addParkingPlaceDetailsOwner.dart';
+import 'ownerFiles/addParkingPlaceOwner.dart';
+import 'ownerFiles/addParkingSlotOwner.dart';
+import 'ownerFiles/homePageOwner.dart';
+import 'ownerFiles/parkingLocationOwner.dart';
+import 'ownerFiles/parkingSlotDetailsOwner.dart';
+import 'ownerFiles/parkingSlotOwner.dart';
+import 'ownerFiles/parkingTypeOwner.dart';
+import 'ownerFiles/paymentMethodAddOwner.dart';
+import 'ownerFiles/paymentMethodDetailsOwner.dart';
+import 'ownerFiles/paymentMethodOwner.dart';
+import 'ownerFiles/requestDetailsOwner.dart';
+import 'ownerFiles/startPageOwner.dart';
+import 'ownerFiles/transactionDetailsOwner.dart';
+import 'ownerFiles/transactionsOwner.dart';
 
 Future<void> main() async{
   WidgetsFlutterBinding.ensureInitialized();
@@ -44,6 +59,23 @@ class homeScreen extends StatelessWidget {
           '/showParkingSlotDetails'  : (context) => showParkingSlotDetails(),
           '/parkingReservation' : (context) => parkingReservation(),
           '/paymentDetails' : (context) => paymentDetails(),
+          '/googleMapsDirections' : (context) => LocationTracking(),
+
+          '/parkingLocationOwner': (context) => parkingLocationOwner(),
+          '/startPageOwner': (context) => startPageOwner(),
+          '/homePageOwner': (context) => homePageOwner(),
+          '/transactionDetailsOwner' : (context) => transactionDetailsOwner(),
+          '/parkingSlotOwner' : (context) => parkingSlotOwner(),
+          '/parkingTypeOwner' : (context) => parkingTypeOwner(),
+          '/requestDetailsOwner' : (context) => requestDetailsOwner(),
+          '/transactionsOwner' : (context) => transactionsOwner(),
+          '/paymentMethodOwner' : (context) => paymentMethodOwner(),
+          '/paymentMethodDetailsOwner' : (context) => paymentMethodDetailsOwner(),
+          '/paymentMethodAddOwner' : (context) => paymentMethodAddOwner(),
+          '/showParkingSlotDetailsOwner' : (context) => parkingSlotDetailsOwner(),
+          '/addParkingPlaceOwner': (context) => addParkingPlaceOwner(),
+          '/addParkingPlaceDetailsOwner': (context) => addParkingPlaceDetailsOwner(),
+          '/addParkingSlotOwner': (context) => addParkingSlotOwner()
         },
       )
   );

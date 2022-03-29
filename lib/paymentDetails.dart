@@ -180,9 +180,7 @@ class _paymentDetailsState extends State<paymentDetails> {
                                           children: [
                                             ElevatedButton(
                                                 onPressed: (){
-                                                  Navigator.pushReplacementNamed(context, '/transactionDetails', arguments: {
-                                                    'transactionNumber': args["transactionNumber"],
-                                                  });
+                                                  Navigator.pop(context);
                                                 },
                                                 child: const Text("CANCEL", style: TextStyle(
                                                     fontWeight: FontWeight.bold

@@ -15,19 +15,31 @@ class _signInState extends State<signIn> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Color(0xfff8d73a),
       body: Container(
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width-50,
         margin: EdgeInsets.only(left: 50, right: 50),
-        color: Colors.white,
+        color: Color(0xfff8d73a),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Row(
-              mainAxisAlignment: MainAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  width: 200,
+                  child: Image.asset('images/Logo.png'),
+                )
+              ],
+            ),
+            SizedBox(
+              height: 10,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 Text("Hello",
                   style: TextStyle(
@@ -38,6 +50,7 @@ class _signInState extends State<signIn> {
               ],
             ),
             Row(
+              mainAxisAlignment: MainAxisAlignment.center,
               children: const [
                 Text("Login to your account to continue")
               ],

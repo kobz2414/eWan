@@ -15,6 +15,8 @@ class _transactionDetailsState extends State<transactionDetails> {
   final database = FirebaseDatabase.instance.reference();
   var data;
   var dbTransactions;
+  var dbParkingSlotLoc;
+  var ParkingSlotLocationLat, ParkingSlotLocationLong;
 
   Map args = {};
 
@@ -488,8 +490,6 @@ class _transactionDetailsState extends State<transactionDetails> {
 
                                                           if(dbTransactions != null){
 
-                                                            print(dbTransactions);
-
                                                             return Column(
                                                               children: [
                                                                 const SizedBox(height: 18,),
@@ -715,7 +715,7 @@ class _transactionDetailsState extends State<transactionDetails> {
                                           fontSize: 12
                                       ),),
                                       onPressed: data["RequestStatus"] == "Declined" || data["RequestStatus"] == "Approved" ? null : (){
-                                        Navigator.pushReplacementNamed(context, '/paymentDetails', arguments: {
+                                        Navigator.pushNamed(context, '/paymentDetails', arguments: {
                                           'transactionNumber': args["transactionNumber"]
                                         });
                                       },
@@ -746,6 +746,27 @@ class _transactionDetailsState extends State<transactionDetails> {
                                     )
                                   ],
                                 ),
+                              ),StreamBuilder(
+                                  stream: database.child("ParkingSlot").child(data["ParkingLocationName"]).child(data["ParkingSlotID"]).onValue,
+                                  builder: (context, snapshot) {
+                                  if(snapshot.hasData){
+                                    if (snapshot.connectionState == ConnectionState.waiting) {
+                                      return const Center(
+                                      child: CircularProgressIndicator(),
+                                        );
+                                      } else if (snapshot.hasError) {
+                                        return const Text("Something went wrong");
+                                      }else{
+                                        dbParkingSlotLoc = (snapshot.data! as Event).snapshot.value;
+
+                                        if(dbParkingSlotLoc != null){
+                                          ParkingSlotLocationLat = dbParkingSlotLoc["ParkingSlotLocationLat"];
+                                          ParkingSlotLocationLong = dbParkingSlotLoc["ParkingSlotLocationLong"];
+                                        }
+                                      }
+                                    }
+                                  return SizedBox();
+                                  }
                               ),
                               Container(
                                 child: Row(
@@ -765,6 +786,10 @@ class _transactionDetailsState extends State<transactionDetails> {
                                           fontWeight: FontWeight.bold
                                       ),),
                                       onPressed: data["RequestStatus"] == "Declined" || data["RequestStatus"] == "Pending" ? null : (){
+                                        Navigator.pushReplacementNamed(context, '/googleMapsDirections', arguments: {
+                                          'parkingSlotLocationLat': ParkingSlotLocationLat,
+                                          'parkingSlotLocationLong': ParkingSlotLocationLong,
+                                        });
                                         //MAPS
                                       },
                                     )
