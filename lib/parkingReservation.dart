@@ -389,7 +389,8 @@ class _parkingReservationState extends State<parkingReservation> {
 
     String transactionNumber = 'ADDU' + currMonth.toString() + currDateNum.toString() + currYear.toString() + curHour.toString() + curMin.toString() + currSec.toString();
 
-    databaseParking.child("UserData").child(user.uid).child("Transactions").child(transactionNumber).set({
+    databaseParking.child("userData").child(user.uid).child("Transactions").child(transactionNumber).set({
+      "ownerUID": args["ownerUID"],
       "RequestStatus": "Pending",
       "Date": currDate,
       "ParkingLocationName": args["parkingLocationID"],
@@ -408,6 +409,7 @@ class _parkingReservationState extends State<parkingReservation> {
     });
 
     databaseParking.child("Transactions").child(args["parkingLocationID"]).child(transactionNumber).set({
+      "ownerUID": args["ownerUID"],
       "userID": user.uid,
       "RequestStatus": "Pending",
       "ParkingLocationName": args["parkingLocationID"],

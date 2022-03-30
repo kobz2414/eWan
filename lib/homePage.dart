@@ -440,7 +440,7 @@ class _homePageState extends State<homePage> {
                                     width: MediaQuery.of(context).size.width - 80,
                                     height: MediaQuery.of(context).orientation == Orientation.portrait ? MediaQuery.of(context).size.height - 450 : MediaQuery.of(context).size.height - 100,
                                     child: StreamBuilder(
-                                        stream: databaseTransactions.child("UserData").child(user.uid).child("Transactions").onValue,
+                                        stream: databaseTransactions.child("userData").child(user.uid).child("Transactions").onValue,
                                         builder: (context, snapshot) {
                                           if(snapshot.hasData){
                                             if (snapshot.connectionState == ConnectionState.waiting) {

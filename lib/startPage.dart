@@ -16,7 +16,7 @@ class _homePageState extends State<startPage> {
   final user = FirebaseAuth.instance.currentUser!;
   var data;
 
-  final dbData = FirebaseDatabase.instance.reference().child("UserData").child(FirebaseAuth.instance.currentUser!.uid).child("Transactions").onValue;
+  final dbData = FirebaseDatabase.instance.reference().child("userData").child(FirebaseAuth.instance.currentUser!.uid).child("Transactions").onValue;
 
   @override
   Widget build(BuildContext context) {

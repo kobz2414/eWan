@@ -146,8 +146,6 @@ class _addParkingPlaceDetailsOwnerState extends State<addParkingPlaceDetailsOwne
 
   void addNewParkingPlace(String parkingName, double parkingLocLat, double parkingLocLng, String parkingSlotsNum){
     final DateTime now = DateTime.now().toLocal();
-    var currDate = DateFormat.yMMMMd('en_US').format(now);
-    var currTime = DateFormat.jm().format(now);
 
     var currMonth = DateFormat('M').format(now);
     var currDateNum = DateFormat('d').format(now);

@@ -58,7 +58,7 @@ class _transactionsState extends State<paymentMethodOwner> {
                                   //width: MediaQuery.of(context).size.width - 80,
                                   //height: MediaQuery.of(context).orientation == Orientation.portrait ? MediaQuery.of(context).size.height - 500 : MediaQuery.of(context).size.height - 160,
                                   child: StreamBuilder(
-                                      stream: databaseTransactions.child("PaymentMethods").onValue,
+                                      stream: databaseTransactions.child("PaymentMethods").child(user.uid).onValue,
                                       builder: (context, snapshot) {
                                         if(snapshot.hasData){
                                           if (snapshot.connectionState == ConnectionState.waiting) {

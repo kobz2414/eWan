@@ -201,7 +201,7 @@ class _paymentMethodAddState extends State<paymentMethodAddOwner> {
 
 
   void addPaymentMethod(String methodName, String methodAccountName, String methodAccountNumber) {
-    databaseParking.child("PaymentMethods").child(methodName).set({
+    databaseParking.child("PaymentMethods").child(user.uid).child(methodName).set({
       "AccountName": methodAccountName,
       "AccountNumber": methodAccountNumber,
       "MethodName": methodName,

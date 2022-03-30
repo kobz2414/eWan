@@ -57,7 +57,7 @@ class _parkingTypeState extends State<parkingTypeOwner> {
             child: Container(
               margin: EdgeInsets.only(left: 20, right: 20),
               child: StreamBuilder(
-                  stream: database.child("ParkingLocation").child("Ateneo de Davao University").onValue,
+                  stream: database.child("ParkingLocation").child(args["parkingLocationID"]).onValue,
                   builder: (context, snapshot) {
                     if (snapshot.connectionState == ConnectionState.waiting) {
                       return const Center(
@@ -119,7 +119,7 @@ class _parkingTypeState extends State<parkingTypeOwner> {
                           ),
                           Column(
                             children: const [
-                              Text('Current Parking Price', style: TextStyle(
+                              Text('Current Parking Price (Hourly)', style: TextStyle(
                                   color: Color(0xff5d6974),
                                   fontWeight: FontWeight.bold,
                                   fontSize: 12
@@ -242,7 +242,7 @@ class _parkingTypeState extends State<parkingTypeOwner> {
                               border: OutlineInputBorder(
                                 borderRadius: BorderRadius.circular(15),
                               ),
-                              labelText: 'Parking Price*',
+                              labelText: 'Parking Price (Hourly)*',
                               hintText: data["RentPrice"],
                             ),
                             keyboardType: TextInputType.number,
@@ -396,21 +396,21 @@ class _parkingTypeState extends State<parkingTypeOwner> {
                                             },
                                           );
                                         }else{
-                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                          database.child("ParkingLocation").child(args["parkingLocationID"]).update({
                                             "RentTimeFrom": rentTimeFrom,
                                             "RentTimeFromFormatted" : rentTimeFromFormatted,
                                           });
 
-                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                          database.child("ParkingLocation").child(args["parkingLocationID"]).update({
                                             "RentTimeTo": rentTimeTo,
                                             "RentTimeToFormatted" : rentTimeToFormatted,
                                           });
 
-                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                          database.child("ParkingLocation").child(args["parkingLocationID"]).update({
                                             "RentPrice": rentPrice,
                                           });
 
-                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                          database.child("ParkingLocation").child(args["parkingLocationID"]).update({
                                             "ParkingType": parkingType,
                                           });
 
@@ -443,21 +443,21 @@ class _parkingTypeState extends State<parkingTypeOwner> {
                                             },
                                           );
                                         }else if (activeParkingType == "Free"){
-                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                          database.child("ParkingLocation").child(args["parkingLocationID"]).update({
                                             "RentTimeFrom": "",
                                             "RentTimeFromFormatted" : "",
                                           });
 
-                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                          database.child("ParkingLocation").child(args["parkingLocationID"]).update({
                                             "RentTimeTo": "",
                                             "RentTimeToFormatted" : "",
                                           });
 
-                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                          database.child("ParkingLocation").child(args["parkingLocationID"]).update({
                                             "RentPrice": "",
                                           });
 
-                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                          database.child("ParkingLocation").child(args["parkingLocationID"]).update({
                                             "ParkingType": parkingType,
                                           });
 
@@ -465,26 +465,26 @@ class _parkingTypeState extends State<parkingTypeOwner> {
                                         }else{
 
                                           if(price.text != ""){
-                                            database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                            database.child("ParkingLocation").child(args["parkingLocationID"]).update({
                                               "RentPrice": rentPrice,
                                             });
                                           }
 
                                           if(rentTimeTo != ""){
-                                            database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                            database.child("ParkingLocation").child(args["parkingLocationID"]).update({
                                               "RentTimeTo": rentTimeTo,
                                               "RentTimeToFormatted" : rentTimeToFormatted,
                                             });
                                           }
 
                                           if(rentTimeFrom != ""){
-                                            database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                            database.child("ParkingLocation").child(args["parkingLocationID"]).update({
                                               "RentTimeFrom": rentTimeFrom,
                                               "RentTimeFromFormatted" : rentTimeFromFormatted,
                                             });
                                           }
 
-                                          database.child("ParkingLocation").child("Ateneo de Davao University").update({
+                                          database.child("ParkingLocation").child(args["parkingLocationID"]).update({
                                             "ParkingType": parkingType,
                                           });
 

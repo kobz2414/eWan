@@ -669,7 +669,7 @@ class _requestDetailsState extends State<requestDetailsOwner> {
                                           "RequestStatus": "Declined"
                                         });
 
-                                        database.child("UserData").child(data["userID"].toString()).child("Transactions").child(args["transactionNumber"]).update({
+                                        database.child("userData").child(data["userID"].toString()).child("Transactions").child(args["transactionNumber"]).update({
                                           "TransactionStatus": "Past",
                                           "RequestStatus": "Declined"
                                         });
@@ -681,7 +681,7 @@ class _requestDetailsState extends State<requestDetailsOwner> {
                                               "RequestStatus": "Declined"
                                             });
 
-                                            database.child("UserData").child(entryList[x].value["userID"]).child("Transactions").child(entryList[x].key).update({
+                                            database.child("userData").child(entryList[x].value["userID"]).child("Transactions").child(entryList[x].key).update({
                                               "TransactionStatus": "Past",
                                               "RequestStatus": "Declined"
                                             });
@@ -693,7 +693,7 @@ class _requestDetailsState extends State<requestDetailsOwner> {
                                           "RequestStatus": requestCurrentStatus,
                                         });
 
-                                        database.child("UserData").child(data["userID"].toString()).child("Transactions").child(args["transactionNumber"]).update({
+                                        database.child("userData").child(data["userID"].toString()).child("Transactions").child(args["transactionNumber"]).update({
                                           "RequestStatus": requestCurrentStatus,
                                         });
 

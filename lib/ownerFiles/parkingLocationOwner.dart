@@ -43,37 +43,52 @@ class _parkingLocationState extends State<parkingLocationOwner> {
             }else if (snapshot.hasError) {
               return const Text("Something went wrong");
             }else{
-              markers = Set();
 
               dbData = (snapshot.data! as Event).snapshot.value;
-              var entryList = dbData.entries.toList();
 
-              for(int x = 0; x < dbData.length; x++){
-                Marker resultMarker = Marker(
-                  markerId: MarkerId(entryList[x].value["markerID"]),
-                  infoWindow: InfoWindow(
-                      title: entryList[x].value["parkingName"],
-                      snippet: "Click to view more details" ,
-                      onTap: () {
-                        Navigator.pushNamed(context, '/homePageOwner', arguments: {
-                          'parkingLocationID': entryList[x].value["parkingName"]
-                        });
-                      }),
-                  position: LatLng(entryList[x].value["parkingLat"], entryList[x].value["parkingLong"]),
-                  icon: BitmapDescriptor.defaultMarkerWithHue(
-                    BitmapDescriptor.hueViolet,
-                  ),
-                );
-                markers.add(resultMarker);
-              }
-              return Stack(
-                children: <Widget>[
-                  _buildGoogleMap(context),
-                  /*_zoomminusfunction(),
+              if(dbData != null){
+                markers = Set();
+                var entryList = dbData.entries.toList();
+
+                for(int x = 0; x < dbData.length; x++){
+                  Marker resultMarker = Marker(
+                    markerId: MarkerId(entryList[x].value["markerID"]),
+                    infoWindow: InfoWindow(
+                        title: entryList[x].value["parkingName"],
+                        snippet: "Click to view more details" ,
+                        onTap: () {
+                          Navigator.pushNamed(context, '/homePageOwner', arguments: {
+                            'parkingLocationID': entryList[x].value["parkingName"]
+                          });
+                        }),
+                    position: LatLng(entryList[x].value["parkingLat"], entryList[x].value["parkingLong"]),
+                    icon: BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueViolet,
+                    ),
+                  );
+                  markers.add(resultMarker);
+                }
+                return Stack(
+                  children: <Widget>[
+                    _buildGoogleMap(context),
+                    /*_zoomminusfunction(),
                     _zoomplusfunction(),
                     _buildContainer(),*/
-                ],
-              );
+                  ],
+                );
+              }else{
+                return Container(
+                  height: MediaQuery.of(context).size.height,
+                  width: MediaQuery.of(context).size.width,
+                  child: GoogleMap(
+                    mapType: MapType.normal,
+                    initialCameraPosition:  CameraPosition(target: LatLng(7.071868, 125.614091), zoom: 16),
+                    onMapCreated: (GoogleMapController controller) {
+                      _controller.complete(controller);
+                    },
+                  ),
+                );
+              }
             }
           },
         ),

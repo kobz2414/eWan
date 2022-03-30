@@ -114,6 +114,7 @@ class _showParkingSlotDetailsState extends State<showParkingSlotDetails> {
                                       Navigator.pushReplacementNamed(context, '/parkingReservation', arguments: {
                                         'parkingSlotID': args["parkingSlotID"],
                                         'parkingLocationID': args["parkingLocationID"],
+                                        'ownerUID': dbData["OwnerUID"]
                                       });
                                       ;
                                     },

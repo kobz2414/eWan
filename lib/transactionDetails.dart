@@ -35,7 +35,7 @@ class _transactionDetailsState extends State<transactionDetails> {
                 child: Container(
                   margin: EdgeInsets.only(left: 20, right: 20),
                   child: StreamBuilder(
-                      stream: database.child("UserData").child(user.uid).child("Transactions").child(args["transactionNumber"]).onValue,
+                      stream: database.child("userData").child(user.uid).child("Transactions").child(args["transactionNumber"]).onValue,
                       builder: (context, snapshot) {
                         if (snapshot.connectionState == ConnectionState.waiting) {
                           return const Center(
@@ -45,6 +45,7 @@ class _transactionDetailsState extends State<transactionDetails> {
                           return const Text("Something went wrong");
                         }else {
                           data = (snapshot.data! as Event).snapshot.value;
+
 
                           return Column(
                             children: [
@@ -345,7 +346,7 @@ class _transactionDetailsState extends State<transactionDetails> {
                                                 width: MediaQuery.of(context).size.width - 80,
                                                 height: MediaQuery.of(context).orientation == Orientation.portrait ? MediaQuery.of(context).size.height - 500 : MediaQuery.of(context).size.height - 160,
                                                 child: StreamBuilder(
-                                                    stream: database.child("PaymentMethods").onValue,
+                                                    stream: database.child("PaymentMethods").child(data["ownerUID"]).onValue,
                                                     builder: (context, snapshot) {
                                                       if(snapshot.hasData){
                                                         if (snapshot.connectionState == ConnectionState.waiting) {

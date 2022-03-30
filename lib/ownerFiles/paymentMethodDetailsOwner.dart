@@ -173,11 +173,11 @@ class _paymentMethodDetailsState extends State<paymentMethodDetailsOwner> {
   }
 
   void deletePaymentMethod(String paymentMethodName) {
-    database.child("PaymentMethods").child(paymentMethodName).remove();
+    database.child("PaymentMethods").child(user.uid).child(paymentMethodName).remove();
   }
 
   void savePaymentMethodDetails(String paymentMethodName, String accountName, String accountNumber) {
-    database.child("PaymentMethods").child(paymentMethodName).update({
+    database.child("PaymentMethods").child(user.uid).child(paymentMethodName).update({
       "AccountName" : accountName,
       "AccountNumber" : accountNumber,
     });
